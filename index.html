@@ -1,7 +1,60 @@
 <html>
     <head>
-        <script src="vectorial.js"></script>
         <script>
+            function Scalar() {}
+
+            Scalar.small = function() {
+                return 0.000001;
+            }
+
+            function Executive(config) {
+                this.config = config;
+                this.previousTimestamp = null;
+                this.simulationLeadTime = 0;
+            }
+
+            Executive.prototype.start = function() {
+                this.previousTimestamp = this.config.domWindow.performance.now();
+                this.config.domWindow.requestAnimationFrame(this.update);
+            }
+
+            Executive.prototype.update = function(timestamp) {
+                var frameTime = (timestamp - this.previousTimestamp) / 1000;
+                this.previousTimestamp = timestamp;
+
+                // Clamp frame time in case the browser pauses the animation
+                frameTime = Math.min(frameTime, this.config.maxCatchUp);
+
+                // Calculate simulation time remaining in current frame
+                var simulationTime = frameTime - this.simulationLeadTime;
+
+                // Calculate number of simulation steps to at least catch up
+                var numSteps = Math.ceil(simulationTime / (this.config.stepsize + Scalar.small()));
+
+                // Update simulation lead time for the next pass
+                this.simulationLeadTime = numSteps * this.config.stepsize - simulationTime;
+
+                for (var i = 0; i < numSteps; i++) {
+                    this.config.simulation.update();
+                }
+
+                //
+                // Render a simple visualization
+                //
+                var canvas = this.config.domWindow.document.getElementById(this.config.drawingCanvasId);
+                var context = canvas.getContext("2d");
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.save();
+                context.translate(this.config.drawingOriginX, this.config.drawingOriginY);
+                context.scale(this.config.drawingScale, -this.config.drawingScale);
+                context.beginPath();
+                this.config.simulation.visualize(context, frameTime);
+                context.restore();
+                context.stroke();
+
+                this.config.domWindow.requestAnimationFrame(this.update);
+            }
+
             var app = {
                 model: null,
                 executive: null,
@@ -9,16 +62,16 @@
                 initialize: function() {
                     model = new Foo();
 
-                    executive = new Executive(
-                        window,    // Main window with DOM
-                        model,     // simulation model
-                        "visual",  // id of canvas element for drawing
-                        500,       // x location of origin for drawing (pixels)
-                        400,       // y location of origin for drawing (pixels)
-                        500 / 13,  // scale factor for drawing (pixels per unit)
-                        0.05,      // maximum catch-up time following a pause in animation (seconds)
-                        0.001      // simulation stepsize (seconds)
-                        );
+                    executive = new Executive({
+                        domWindow: window,          // Main window with DOM
+                        simulation: model,          // simulation model
+                        drawingCanvasId: "visual",  // id of canvas element for drawing
+                        drawingOriginX: 500,        // x location of origin for drawing (pixels)
+                        drawingOriginY: 400,        // y location of origin for drawing (pixels)
+                        drawingScale: 500 / 13,     // scale factor for drawing (pixels per unit)
+                        maxCatchUp: 0.05,           // maximum catch-up time following a pause in animation (seconds)
+                        stepsize: 0.001             // simulation stepsize (seconds)
+                    });
 
                     executive.start();
                 }
