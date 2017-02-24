@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <script src="vectorial.js"></script>
+        <script>
+            var app = {
+                executive: null,
+
+                initialize: function() {
+                    executive = new Executive(
+                        window,    // Main window with DOM
+                        "visual",  // id of canvas element for drawing
+                        500,       // x location of origin for drawing (pixels)
+                        400,       // y location of origin for drawing (pixels)
+                        500 / 13,  // scale factor for drawing (pixels per unit)
+                        0.05,      // maximum catch-up time when animation resumes (seconds)
+                        0.001      // simulation stepsize (seconds)
+                        );
+
+                    executive.start();
+                }
+            }
+        </script>
+    </head>
+    <body onload="app.initialize()">
+        <canvas id="visual" width="800" height="600" style="border:1px solid #000000;">Opps!</canvas>
+    </body>
+</html>
