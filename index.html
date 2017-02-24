@@ -65,7 +65,7 @@
 
             Foo.prototype.visualize = function(context, frameTime) {
                 context.moveTo(0, 0);
-                context.lineTo(80 * Math.cos(angle), 80 * Math.sin(angle));
+                context.lineTo(80 * Math.cos(this.angle), 80 * Math.sin(this.angle));
             }
 
             var app = {
