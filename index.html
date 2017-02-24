@@ -15,7 +15,7 @@
 
             Executive.prototype.start = function() {
                 this.previousTimestamp = this.config.domWindow.performance.now();
-                this.config.domWindow.requestAnimationFrame(this.update);
+                this.config.domWindow.requestAnimationFrame(this.update.bind(this));
             }
 
             Executive.prototype.update = function(timestamp) {
@@ -52,7 +52,7 @@
                 context.restore();
                 context.stroke();
 
-                this.config.domWindow.requestAnimationFrame(this.update);
+                this.config.domWindow.requestAnimationFrame(this.update.bind(this));
             }
 
             function Foo() {
