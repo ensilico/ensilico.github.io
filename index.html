@@ -73,20 +73,20 @@
 
             Foo.prototype.visualize = function(context, frameTime) {
                 context.moveTo(0, 0);
-                context.lineTo(80 * Math.cos(this.angle), 80 * Math.sin(this.angle));
+                context.lineTo(4 * Math.cos(this.angle), 4 * Math.sin(this.angle));
             }
 
             var app = {
                 model: null,
                 executive: null,
 
-                initialize: function() {
+                initialize: function(canvasId) {
                     model = new Foo();
 
                     executive = new Executive({
                         domWindow: window,          // Main window with DOM
                         simulation: model,          // simulation model
-                        drawingCanvasId: "visual",  // id of canvas element for drawing
+                        drawingCanvasId: canvasId,  // id of canvas element for drawing
                         drawingOriginX: 500,        // x location of origin for drawing (pixels)
                         drawingOriginY: 400,        // y location of origin for drawing (pixels)
                         drawingScale: 500 / 13,     // scale factor for drawing (pixels per unit)
@@ -99,7 +99,7 @@
             }
         </script>
     </head>
-    <body onload="app.initialize()">
+    <body onload="app.initialize('visual')">
         <canvas id="visual" width="800" height="600" style="border:1px solid #000000;">Opps!</canvas>
     </body>
 </html>
