@@ -3,16 +3,20 @@
         <script src="vectorial.js"></script>
         <script>
             var app = {
+                model: null,
                 executive: null,
 
                 initialize: function() {
+                    model = new Foo();
+
                     executive = new Executive(
                         window,    // Main window with DOM
+                        model,     // simulation model
                         "visual",  // id of canvas element for drawing
                         500,       // x location of origin for drawing (pixels)
                         400,       // y location of origin for drawing (pixels)
                         500 / 13,  // scale factor for drawing (pixels per unit)
-                        0.05,      // maximum catch-up time when animation resumes (seconds)
+                        0.05,      // maximum catch-up time following a pause in animation (seconds)
                         0.001      // simulation stepsize (seconds)
                         );
 
