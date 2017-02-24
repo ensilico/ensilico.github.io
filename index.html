@@ -35,7 +35,7 @@
                 this.simulationLeadTime = numSteps * this.config.stepsize - simulationTime;
 
                 for (var i = 0; i < numSteps; i++) {
-                    this.config.simulation.update();
+                    this.config.simulation.update(this.config.stepsize);
                 }
 
                 //
@@ -53,6 +53,19 @@
                 context.stroke();
 
                 this.config.domWindow.requestAnimationFrame(this.update);
+            }
+
+            function Foo() {
+                this.angle = 0;
+            }
+
+            Foo.prototype.update = function(stepsize) {
+                this.angle += stepsize * 3.14 / 4;
+            }
+
+            Foo.prototype.visualize = function(context, frameTime) {
+                context.moveTo(0, 0);
+                context.lineTo(80 * Math.cos(angle), 80 * Math.sin(angle));
             }
 
             var app = {
