@@ -14,11 +14,17 @@
             }
 
             Executive.prototype.start = function() {
+                var self = this;
+
                 this.previousTimestamp = this.config.domWindow.performance.now();
-                this.config.domWindow.requestAnimationFrame(this.update.bind(this));
+                this.config.domWindow.requestAnimationFrame(function(timestamp) {
+                    self.update(timestamp);
+                });
             }
 
             Executive.prototype.update = function(timestamp) {
+                var self = this;
+
                 var frameTime = (timestamp - this.previousTimestamp) / 1000;
                 this.previousTimestamp = timestamp;
 
@@ -52,7 +58,9 @@
                 context.restore();
                 context.stroke();
 
-                this.config.domWindow.requestAnimationFrame(this.update.bind(this));
+                this.config.domWindow.requestAnimationFrame(function(timestamp) {
+                    self.update(timestamp);
+                });
             }
 
             function Foo() {
