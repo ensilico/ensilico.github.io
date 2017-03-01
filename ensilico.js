@@ -29,15 +29,20 @@ function Executive(simulation, canvasId, mainWindow) {
     this.mainWindow = mainWindow;
     this.previousTimestamp = null;
     this.simulationLeadTime = 0;
-    this.preferences = {
+
+    // Allow simulation to override the following default values
+    var preferences = {
         stepsize = 0.01,
         nominalViewDimension = 4
     };
-    Platform.copyCorresponding(this.preferences, simulation.preferences());
-}
+    Platform.copyCorresponding(preferences, simulation.preferences());
 
-Executive.minStepsize = function() {
-    return 0.00001;
+    // Avoid division by zero
+    var minStepsize = 0.00001;
+    var minViewDimension = 0.000001;
+
+    this.stepsize = Math.max(preferences.stepsize, minStepsize);
+    this.nominalViewDimension = Math.max(preferences.nominalViewDimension, minViewDimension);
 }
 
 Executive.maxElapsedTime = function() {
@@ -66,35 +71,36 @@ Executive.prototype.update = function(timestamp) {
     var elapsedTime = (timestamp - this.previousTimestamp) / 1000;
     this.previousTimestamp = timestamp;
 
-    // Prevent division by zero
-    var stepsize = Math.max(this.preferences.stepsize, this.minStepsize());
-
-    // Prevent an excessive number of simulation steps
+    // Avoid excessive catch-up
     elapsedTime = Math.min(elapsedTime, this.maxElapsedTime());
 
     // Calculate remaining simulation time
     var simulationTime = elapsedTime - this.simulationLeadTime;
 
     // Calculate how many simulation steps are needed
-    var numSteps = Math.ceil(simulationTime / stepsize);
+    var numSteps = Math.ceil(simulationTime / this.stepsize);
 
-    // Update simulation lead time for the next pass
-    this.simulationLeadTime = numSteps * stepsize - simulationTime; //.............................
-                for (var i = 0; i < numSteps; i++) {
-                    this.config.simulation.update(this.config.stepsize);
-                }
-                //
-                // Render a simple visualization
-                //
-                var canvas = this.config.domWindow.document.getElementById(this.config.drawingCanvasId);
-                var context = canvas.getContext("2d");
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                context.save();
-                context.translate(this.config.drawingOriginX, this.config.drawingOriginY);
-                context.scale(this.config.drawingScale, -this.config.drawingScale);
-                context.beginPath();
-                this.config.simulation.visualize(context, frameTime);
-                context.restore();
-                context.stroke();
+    // Adjust for the next frame
+    this.simulationLeadTime += numSteps * stepsize - elapsedTime;
+
+    for (var i = 0; i < numSteps; i++) {
+        this.simulation.update(this.stepsize);
+    }
+
+    // Allow for a simple visualization
+    var canvas = this.mainWindow.document.getElementById(this.canvasId);
+    var w = canvas.width;
+    var h = canvas.height;
+    var scale = Math.min(w, h) / this.nominalViewDimension;
+    var context = canvas.getContext("2d");
+    context.clearRect(0, 0, w, h);
+    context.save();
+    context.translate(w / 2, h / 2);
+    context.scale(scale, -scale);
+    context.beginPath();
+    this.simulation.visualize(context, elapsedTime);
+    context.restore();
+    context.stroke();
+
     this.nextFrame();
 }
