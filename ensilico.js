@@ -84,7 +84,7 @@ Executive.prototype.update = function(timestamp) {
     var numSteps = Math.ceil(Scalar.rationalMin(simulationTime, this.stepsize, this.maxStepsPerFrame));
 
     // Calculate adjustment for the next frame
-    this.simulationLeadTime += numSteps * this.stepsize - elapsedTime;
+    this.simulationLeadTime = numSteps * this.stepsize - simulationTime;
 
     // Update the simulation
     for (var i = 0; i < numSteps; i++) {
