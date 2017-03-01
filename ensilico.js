@@ -1,3 +1,12 @@
+function Scalar() {}
+
+// Returns the ratio or the specified upper limit avoiding division by zero
+Scalar.rationalMin = function(numerator, denominator, maxRatio) {
+    var fn = maxRatio * numerator;
+    var fd = maxRatio * denominator;
+    return fn / Math.max(numerator, fd);
+}
+
 function Platform() {}
 
 // Copies values from src for corresponding properties in dst.
@@ -32,21 +41,17 @@ function Executive(simulation, canvasId, mainWindow) {
 
     // Default values
     var preferences = {
-        stepsize = 0.01,
         visualScale = 100,
-        minStepsize = 0.00001, //TODO: replace both of these with maxNumSteps
-        maxElapsedTime = 0.05  //TODO: replace both of these with maxNumSteps
+        stepsize = 0.01,
+        maxStepsPerFrame = 100
     };
 
-    // Allow simulation to override (typically just stepsize and visualScale)
+    // Allow simulation to override
     Platform.softCopy(preferences, simulation.preferences());
 
-    this.stepsize = preferences.stepsize;
     this.visualScale = preferences.visualScale;
-
-    // Needed because the browser might pause the animation indefinitely
-    this.minStepsize = preferences.minStepsize;
-    this.maxElapsedTime = preferences.maxElapsedTime;
+    this.stepsize = preferences.stepsize;
+    this.maxStepsPerFrame = preferences.maxStepsPerFrame;
 }
 
 // A convenience method with a dependency on the window object
@@ -71,14 +76,12 @@ Executive.prototype.update = function(timestamp) {
     var elapsedTime = (timestamp - this.previousTimestamp) / 1000;
     this.previousTimestamp = timestamp;
 
-    // Avoid excessive catch-up after a long pause
-    elapsedTime = Math.min(elapsedTime, this.maxElapsedTime);
-
     // Adjust for simulation lead in previous frame
     var simulationTime = elapsedTime - this.simulationLeadTime;
 
     // Number of steps needed to meet or exceed the adjusted time
-    var numSteps = Math.ceil(simulationTime / Math.max(this.stepsize, this.minStepsize));
+    // Impose an upper limit because the browser might pause the animation indefinitely
+    var numSteps = Math.ceil(Scalar.rationalMin(simulationTime, this.stepsize, this.maxStepsPerFrame));
 
     // Calculate adjustment for the next frame
     this.simulationLeadTime += numSteps * this.stepsize - elapsedTime;
