@@ -23,23 +23,40 @@ Platform.copyCorresponding(dst, src) {
     return dst;
 }
 
-function Executive(simulation, canvasId) {
+function Executive(simulation, canvasId, mainWindow) {
     this.simulation = simulation;
     this.canvasId = canvasId;
+    this.mainWindow = mainWindow;
+    this.previousTimestamp = null;
+    this.simulationLeadTime = 0;
+    this.preferences = {
+        stepsize = 0.01,
+        nominalViewDimension = 4
+    };
+    Platform.copyCorresponding(this.preferences, simulation.preferences());
+}
+
+Executive.minStepsize = function() {
+    return 0.00001;
+}
+
+Executive.maxElapsedTime = function() {
+    return 0.05;
 }
 
 Executive.start = function(simulation, canvasId) {
-    var executive = new Executive(simulation, canvasId);
+    var executive = new Executive(simulation, canvasId, window);
     executive.startSimulation();
 }
 
 Executive.prototype.startSimulation = function() {
-    // Default values for simulation preferences
-    var preferences = {
-        stepsize = 0.01,
-        minViewDimension = 4
-    };
-    
-    // Override defaults
-    Platform.copyCorresponding(preferences, this.simulation.preferences());
+    this.previousTimestamp = this.mainWindow.performance.now();
+    this.nextFrame(); // LEFT OFF HERE................................
+}
+
+Executive.prototype.nextFrame = function() {
+    var self = this;
+    this.mainWindow.requestAnimationFrame(function(timestamp) {
+        self.update(timestamp);
+    });
 }
