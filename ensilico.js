@@ -24,7 +24,7 @@ Platform.softCopy = function(dst, src) {
                 if (srcType != "object") {
                     dst[key] = srcValue;
                 } else if (srcValue && dstValue) {
-                    copyCorresponding(dstValue, srcValue);
+                    softCopy(dstValue, srcValue);
                 }
             }
         }
