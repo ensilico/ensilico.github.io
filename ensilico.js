@@ -74,20 +74,20 @@ Executive.prototype.update = function(timestamp) {
     // Avoid excessive catch-up
     elapsedTime = Math.min(elapsedTime, this.maxElapsedTime());
 
-    // Calculate remaining simulation time
+    // Adjust for simulation lead
     var simulationTime = elapsedTime - this.simulationLeadTime;
 
-    // Calculate how many simulation steps are needed
+    // Steps needed to meet or exceed the adjusted time
     var numSteps = Math.ceil(simulationTime / this.stepsize);
 
-    // Adjust for the next frame
-    this.simulationLeadTime += numSteps * stepsize - elapsedTime;
+    // Calculate adjustment for the next frame
+    this.simulationLeadTime += numSteps * this.stepsize - elapsedTime;
 
     for (var i = 0; i < numSteps; i++) {
         this.simulation.update(this.stepsize);
     }
 
-    // Allow for a simple visualization
+    // Simple visualization
     var canvas = this.mainWindow.document.getElementById(this.canvasId);
     var w = canvas.width;
     var h = canvas.height;
