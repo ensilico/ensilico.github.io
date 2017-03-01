@@ -9,8 +9,8 @@ Scalar.rationalMin = function(numerator, denominator, maxRatio) {
 
 function Platform() {}
 
-// Copies values from src for corresponding properties in dst.
-// Returns dst.
+// Copies values from src for corresponding properties in dst
+// Returns dst
 Platform.softCopy(dst, src) {
     for (var key in src) {
         // The key must be in both objects
