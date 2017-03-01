@@ -2,7 +2,7 @@ function Platform() {}
 
 // Copies values from src for corresponding properties in dst.
 // Returns dst.
-Platform.copyCorresponding(dst, src) {
+Platform.softCopy(dst, src) {
     for (var key in src) {
         // The key must be in both objects
         if (src.hasOwnProperty(key) && dst.hasOwnProperty(key)) {
@@ -33,20 +33,19 @@ function Executive(simulation, canvasId, mainWindow) {
     // Default values
     var preferences = {
         stepsize = 0.01,
-        viewHeight = 4,
-        minStepsize = 0.00001,
-        minViewHeight = 0.000001,
-        maxElapsedTime = 0.05
+        visualScale = 100,
+        minStepsize = 0.00001, //TODO: replace both of these with maxNumSteps
+        maxElapsedTime = 0.05  //TODO: replace both of these with maxNumSteps
     };
 
-    // Allow simulation to override (typically just stepsize and viewHeight)
-    Platform.copyCorresponding(preferences, simulation.preferences());
+    // Allow simulation to override (typically just stepsize and visualScale)
+    Platform.softCopy(preferences, simulation.preferences());
 
-    // Enforce limits to avoid runtime divisions by zero
-    this.stepsize = Math.max(preferences.stepsize, preferences.minStepsize);
-    this.viewHeight = Math.max(preferences.viewHeight, preferences.minViewHeight);
+    this.stepsize = preferences.stepsize;
+    this.visualScale = preferences.visualScale;
 
     // Needed because the browser might pause the animation indefinitely
+    this.minStepsize = preferences.minStepsize;
     this.maxElapsedTime = preferences.maxElapsedTime;
 }
 
@@ -79,7 +78,7 @@ Executive.prototype.update = function(timestamp) {
     var simulationTime = elapsedTime - this.simulationLeadTime;
 
     // Number of steps needed to meet or exceed the adjusted time
-    var numSteps = Math.ceil(simulationTime / this.stepsize);
+    var numSteps = Math.ceil(simulationTime / Math.max(this.stepsize, this.minStepsize));
 
     // Calculate adjustment for the next frame
     this.simulationLeadTime += numSteps * this.stepsize - elapsedTime;
@@ -93,12 +92,11 @@ Executive.prototype.update = function(timestamp) {
     var canvas = this.mainWindow.document.getElementById(this.canvasId);
     var w = canvas.width;
     var h = canvas.height;
-    var scale = h / this.viewHeight;
     var context = canvas.getContext("2d");
     context.clearRect(0, 0, w, h);
     context.save();
     context.translate(w / 2, h / 2);
-    context.scale(scale, -scale);
+    context.scale(this.visualScale, -this.visualScale);
     context.beginPath();
     this.simulation.visualize(context, elapsedTime);
     context.restore();
