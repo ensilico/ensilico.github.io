@@ -30,23 +30,24 @@ function Executive(simulation, canvasId, mainWindow) {
     this.previousTimestamp = null;
     this.simulationLeadTime = 0;
 
-    // Allow simulation to override the following default values
+    // Default values
     var preferences = {
         stepsize = 0.01,
-        nominalViewDimension = 4
+        viewHeight = 4,
+        minStepsize = 0.00001,
+        minViewHeight = 0.000001,
+        maxElapsedTime = 0.05
     };
+
+    // Allow simulation to override (typically just stepsize and viewHeight)
     Platform.copyCorresponding(preferences, simulation.preferences());
 
-    // Avoid division by zero
-    var minStepsize = 0.00001;
-    var minViewDimension = 0.000001;
+    // Enforce limits to avoid runtime divisions by zero
+    this.stepsize = Math.max(preferences.stepsize, preferences.minStepsize);
+    this.viewHeight = Math.max(preferences.viewHeight, preferences.minViewHeight);
 
-    this.stepsize = Math.max(preferences.stepsize, minStepsize);
-    this.nominalViewDimension = Math.max(preferences.nominalViewDimension, minViewDimension);
-}
-
-Executive.maxElapsedTime = function() {
-    return 0.05;
+    // Needed because the browser might pause the animation indefinitely
+    this.maxElapsedTime = preferences.maxElapsedTime;
 }
 
 // A convenience method with a dependency on the window object
@@ -71,18 +72,19 @@ Executive.prototype.update = function(timestamp) {
     var elapsedTime = (timestamp - this.previousTimestamp) / 1000;
     this.previousTimestamp = timestamp;
 
-    // Avoid excessive catch-up
-    elapsedTime = Math.min(elapsedTime, this.maxElapsedTime());
+    // Avoid excessive catch-up after a long pause
+    elapsedTime = Math.min(elapsedTime, this.maxElapsedTime);
 
-    // Adjust for simulation lead
+    // Adjust for simulation lead in previous frame
     var simulationTime = elapsedTime - this.simulationLeadTime;
 
-    // Steps needed to meet or exceed the adjusted time
+    // Number of steps needed to meet or exceed the adjusted time
     var numSteps = Math.ceil(simulationTime / this.stepsize);
 
     // Calculate adjustment for the next frame
     this.simulationLeadTime += numSteps * this.stepsize - elapsedTime;
 
+    // Update the simulation
     for (var i = 0; i < numSteps; i++) {
         this.simulation.update(this.stepsize);
     }
@@ -91,7 +93,7 @@ Executive.prototype.update = function(timestamp) {
     var canvas = this.mainWindow.document.getElementById(this.canvasId);
     var w = canvas.width;
     var h = canvas.height;
-    var scale = Math.min(w, h) / this.nominalViewDimension;
+    var scale = h / this.viewHeight;
     var context = canvas.getContext("2d");
     context.clearRect(0, 0, w, h);
     context.save();
