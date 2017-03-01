@@ -76,7 +76,7 @@ Executive.prototype.update = function(timestamp) {
     var elapsedTime = (timestamp - this.previousTimestamp) / 1000;
     this.previousTimestamp = timestamp;
 
-    // Adjust for simulation lead in previous frame
+    // Adjust for simulation lead from previous frame
     var simulationTime = elapsedTime - this.simulationLeadTime;
 
     // Number of steps needed to meet or exceed the adjusted time
