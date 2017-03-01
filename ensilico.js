@@ -1,6 +1,6 @@
 function Scalar() {}
 
-// Returns the ratio or the specified upper limit avoiding division by zero
+// Returns the ratio or the specified upper limit
 Scalar.rationalMin = function(numerator, denominator, maxRatio) {
     var fn = maxRatio * numerator;
     var fd = maxRatio * denominator;
