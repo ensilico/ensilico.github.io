@@ -11,7 +11,7 @@ function Platform() {}
 
 // Copies values from src for corresponding properties in dst
 // Returns dst
-Platform.softCopy(dst, src) {
+Platform.softCopy = function(dst, src) {
     for (var key in src) {
         // The key must be in both objects
         if (src.hasOwnProperty(key) && dst.hasOwnProperty(key)) {
