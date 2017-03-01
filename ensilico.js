@@ -44,6 +44,7 @@ Executive.maxElapsedTime = function() {
     return 0.05;
 }
 
+// A convenience method with a dependency on the window object
 Executive.start = function(simulation, canvasId) {
     var executive = new Executive(simulation, canvasId, window);
     executive.startSimulation();
@@ -51,7 +52,7 @@ Executive.start = function(simulation, canvasId) {
 
 Executive.prototype.startSimulation = function() {
     this.previousTimestamp = this.mainWindow.performance.now();
-    this.nextFrame(); // LEFT OFF HERE................................
+    this.nextFrame();
 }
 
 Executive.prototype.nextFrame = function() {
@@ -59,4 +60,41 @@ Executive.prototype.nextFrame = function() {
     this.mainWindow.requestAnimationFrame(function(timestamp) {
         self.update(timestamp);
     });
+}
+
+Executive.prototype.update = function(timestamp) {
+    var elapsedTime = (timestamp - this.previousTimestamp) / 1000;
+    this.previousTimestamp = timestamp;
+
+    // Prevent division by zero
+    var stepsize = Math.max(this.preferences.stepsize, this.minStepsize());
+
+    // Prevent an excessive number of simulation steps
+    elapsedTime = Math.min(elapsedTime, this.maxElapsedTime());
+
+    // Calculate remaining simulation time
+    var simulationTime = elapsedTime - this.simulationLeadTime;
+
+    // Calculate how many simulation steps are needed
+    var numSteps = Math.ceil(simulationTime / stepsize);
+
+    // Update simulation lead time for the next pass
+    this.simulationLeadTime = numSteps * stepsize - simulationTime; //.............................
+                for (var i = 0; i < numSteps; i++) {
+                    this.config.simulation.update(this.config.stepsize);
+                }
+                //
+                // Render a simple visualization
+                //
+                var canvas = this.config.domWindow.document.getElementById(this.config.drawingCanvasId);
+                var context = canvas.getContext("2d");
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.save();
+                context.translate(this.config.drawingOriginX, this.config.drawingOriginY);
+                context.scale(this.config.drawingScale, -this.config.drawingScale);
+                context.beginPath();
+                this.config.simulation.visualize(context, frameTime);
+                context.restore();
+                context.stroke();
+    this.nextFrame();
 }
