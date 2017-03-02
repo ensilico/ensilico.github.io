@@ -41,9 +41,9 @@ function Executive(simulation, canvasId, mainWindow) {
 
     // Default values
     var preferences = {
-        visualScale = 100,
-        stepsize = 0.01,
-        maxStepsPerFrame = 100
+        visualScale: 100,
+        stepsize: 0.01,
+        maxStepsPerFrame: 100
     };
 
     // Allow simulation to override
