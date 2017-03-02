@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <script src="ensilico.js"></script>
+        <script>
+            function Clock() {
+                this.time = 0;
+                this.radii = {
+                    hour: 0.6,
+                    minute: 0.75,
+                    second: 0.9,
+                    bezel: 0.95,
+                    outer: 1
+                };
+            }
+
+            Clock.prototype.preferences = function() {
+                return {
+                    visualScale = 200
+                };
+            }
+
+            Clock.prototype.update = function(stepsize) {
+                this.time += stepsize;
+            }
+
+            Clock.prototype.visualize = function(context, elapsedTime) {
+                var sec12h = 60 * 60 * 12;
+                var angle = (this.time % sec12h) * 2 * Math.PI / sec12h;
+                Clock.drawRadial(context, 0, this.radii.hour, angle);
+
+                angle *= 12;
+                Clock.drawRadial(context, 0, this.radii.minute, angle);
+
+                angle *= 60;
+                Clock.drawRadial(context, 0, this.radii.second, angle);
+
+                var numTicks = 12;
+                for (var i = 0; i < numTicks; i++) {
+                    angle = 2 * Math.PI * i / numTicks;
+                    Clock.drawRadial(
+                        context,
+                        this.radii.bezel,
+                        this.radii.outer,
+                        angle);
+                }
+            }
+
+            Clock.drawRadial = function(context, r1, r2, angle) {
+                context.moveTo(r1 * Math.sin(angle), r1 * Math.cos(angle));
+                context.lineTo(r2 * Math.sin(angle), r2 * Math.cos(angle));
+            }
+        </script>
+    </head>
+    <body onload="Executive.start(new Clock(), 'visual')">
+        <canvas id="visual" width="800" height="600">
+            Opps.
+        </canvas>
+    </body>
+</html>
