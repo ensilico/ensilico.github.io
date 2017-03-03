@@ -52,9 +52,9 @@
             }
 
             AutoPlayer.prototype.update = function(stepsize, holdSteady) {
+                var target = (this.time < this.dutyCycle * this.period) ? this.minAngle : this.maxAngle;
+                this.angle = Scalar.lag(this.angle, target, this.responsiveness, stepsize);
                 if (!holdSteady) {
-                    var target = (this.time < this.dutyCycle * this.period) ? this.minAngle : this.maxAngle;
-                    this.angle = Scalar.lag(this.angle, target, this.responsiveness, stepsize);
                     this.time += stepsize;
                     if (this.time > this.period) {
                         this.time -= this.period;
