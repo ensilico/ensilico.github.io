@@ -50,7 +50,10 @@ function Executive(simulation, canvasId, mainWindow) {
     Platform.softCopy(preferences, simulation.preferences());
 
     this.visualScale = preferences.visualScale;
-    this.stepsize = preferences.stepsize;
+    this.controls = {
+        stepsize: preferences.stepsize,
+        holdSteady: false
+    };
     this.maxStepsPerFrame = preferences.maxStepsPerFrame;
 }
 
@@ -76,19 +79,21 @@ Executive.prototype.update = function(timestamp) {
     var elapsedTime = (timestamp - this.previousTimestamp) / 1000;
     this.previousTimestamp = timestamp;
 
+    var stepsize = this.controls.stepsize;
+
     // Adjust for simulation lead from previous frame
     var simulationTime = elapsedTime - this.simulationLeadTime;
 
     // Number of steps needed to meet or exceed the adjusted time
     // Impose an upper limit because the browser might pause the animation indefinitely
-    var numSteps = Math.ceil(Scalar.rationalMin(simulationTime, this.stepsize, this.maxStepsPerFrame));
+    var numSteps = Math.ceil(Scalar.rationalMin(simulationTime, stepsize, this.maxStepsPerFrame));
 
     // Calculate adjustment for the next frame
-    this.simulationLeadTime = Math.max(0, numSteps * this.stepsize - simulationTime);
+    this.simulationLeadTime = Math.max(0, numSteps * stepsize - simulationTime);
 
     // Update the simulation
     for (var i = 0; i < numSteps; i++) {
-        this.simulation.update(this.stepsize);
+        this.simulation.update(this.controls);
     }
 
     // Simple visualization
