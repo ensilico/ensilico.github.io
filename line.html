@@ -1,0 +1,75 @@
+<html>
+    <head>
+        <script src="ensilico.js"></script>
+        <script>
+            function Line() {
+                this.scale = 500 / 13;
+                this.player = new AutoPlayer({
+                    position: {
+                        x: this.scale / 8,
+                        y: this.scale / 6
+                    },
+                    minAngle: Scalar.toRadians(70),
+                    maxAngle: Scalar.toRadians(160),
+                    period: 3,
+                    dutyCycle: 0.5,
+                    responsiveness: 5
+                });
+            }
+
+            Line.prototype.preferences = function() {
+                return {
+                    visualScale: this.scale,
+                    stepsize: 0.001
+                };
+            }
+
+            Line.prototype.update = function(controls) {
+                var stepsize = controls.stepsize;
+                this.player.update(stepsize, controls.holdSteady);
+                //... (e.g., use outputs from this.player to update downstream components)
+            }
+
+            Line.prototype.visualize = function(context, elapsedTime) {
+                //...
+            }
+
+            function AutoPlayer(properties) {
+                this.position = {
+                    x: 0,
+                    y: 0
+                };
+                this.minAngle = 0;
+                this.maxAngle = Scalar.toRadians(90);
+                this.period = 1;
+                this.dutyCycle = 0.5;
+                this.responsiveness = 1;
+
+                Platform.softCopy(this, properties);
+
+                this.angle = this.minAngle;
+                this.time = 0;
+            }
+
+            AutoPlayer.prototype.update = function(stepsize, holdSteady) {
+                if (!holdSteady) {
+                    var target = (this.time < this.dutyCycle * this.period) ? this.minAngle : this.maxAngle;
+                    this.angle = Scalar.lag(this.angle, target, this.responsiveness, stepsize);
+                    this.time += stepsize;
+                    if (this.time > this.period) {
+                        this.time -= this.period;
+                    }
+                }
+            }
+
+            AutoPlayer.prototype.getAxis = function() {
+                //return ...;
+            }
+       </script>
+    </head>
+    <body onload="Executive.start(new Line(), 'visual')">
+        <canvas id="visual" width="800" height="600">
+            Opps.
+        </canvas>
+    </body>
+</html>
