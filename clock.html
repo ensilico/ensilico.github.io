@@ -19,25 +19,25 @@
                 };
             }
 
-            Clock.prototype.update = function(stepsize) {
-                this.time += stepsize;
+            Clock.prototype.update = function(controls) {
+                this.time += controls.stepsize;
             }
 
             Clock.prototype.visualize = function(context, elapsedTime) {
                 var sec12h = 60 * 60 * 12;
                 var angle = (this.time % sec12h) * 2 * Math.PI / sec12h;
-                Clock.drawRadial(context, 0, this.radii.hour, angle);
+                this.constructor.drawRadial(context, 0, this.radii.hour, angle);
 
                 angle *= 12;
-                Clock.drawRadial(context, 0, this.radii.minute, angle);
+                this.constructor.drawRadial(context, 0, this.radii.minute, angle);
 
                 angle *= 60;
-                Clock.drawRadial(context, 0, this.radii.second, angle);
+                this.constructor.drawRadial(context, 0, this.radii.second, angle);
 
                 var numTicks = 12;
                 for (var i = 0; i < numTicks; i++) {
                     angle = 2 * Math.PI * i / numTicks;
-                    Clock.drawRadial(
+                    this.constructor.drawRadial(
                         context,
                         this.radii.bezel,
                         this.radii.outer,
