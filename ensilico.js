@@ -1,10 +1,20 @@
 function Scalar() {}
 
+Scalar.toRadians = function(degrees) {
+    return degrees * Math.PI / 180;
+}
+
 // Returns the ratio or the specified upper limit
 Scalar.rationalMin = function(numerator, denominator, maxRatio) {
     var fn = maxRatio * numerator;
     var fd = maxRatio * denominator;
     return fn / Math.max(numerator, fd);
+}
+
+// Returns next state
+Scalar.lag = function(state, target, responsiveness, stepsize) {
+    var k = responsiveness * stepsize;
+    return (k * target + state) / (k + 1);
 }
 
 function Platform() {}
