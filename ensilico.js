@@ -17,6 +17,17 @@ Scalar.lag = function(state, target, responsiveness, stepsize) {
     return (k * target + state) / (k + 1);
 }
 
+function Pair() {
+    this.x = 0;
+    this.y = 0;
+}
+
+Pair.prototype.load = function(x, y) {
+    this.x = x;
+    this.y = y;
+    return this;
+}
+
 function Platform() {}
 
 // Copies values from src for corresponding properties in dst
