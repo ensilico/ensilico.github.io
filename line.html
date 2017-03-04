@@ -26,11 +26,16 @@
             Line.prototype.update = function(controls) {
                 var stepsize = controls.stepsize;
                 this.player.update(stepsize, controls.holdSteady);
-                //... (e.g., use outputs from this.player to update downstream components)
+                //... use this.player.getAngle() and this.player.storePosition(p)
             }
 
             Line.prototype.visualize = function(context, elapsedTime) {
-                //...
+                //<DEBUG>
+                var p = new Pair();
+                this.player.storePosition(p);
+                context.moveTo(p.x, p.y);
+                context.lineTo(p.x + 3 * Math.cos(this.player.angle), p.y + 3 * Math.sin(this.player.angle));
+                //</DEBUG>
             }
 
             function AutoPlayer(properties) {
@@ -60,8 +65,13 @@
                 }
             }
 
-            AutoPlayer.prototype.getAxis = function() {
-                //return ...;
+            AutoPlayer.prototype.getAngle = function() {
+                return this.angle;
+            }
+
+            AutoPlayer.prototype.storePosition = function(position) {
+                position.load(this.position.x, this.position.y);
+                return this;
             }
        </script>
     </head>
