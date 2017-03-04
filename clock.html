@@ -24,8 +24,8 @@
             }
 
             Clock.prototype.visualize = function(context, elapsedTime) {
-                var sec12h = 60 * 60 * 12;
-                var angle = (this.time % sec12h) * 2 * Math.PI / sec12h;
+                var halfDays = this.time / (60 * 60 * 12);
+                var angle = (halfDays - Math.floor(halfDays)) * 2 * Math.PI;
                 this.constructor.drawRadial(context, 0, this.radii.hour, angle);
 
                 angle *= 12;
