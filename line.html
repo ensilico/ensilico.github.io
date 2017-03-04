@@ -3,11 +3,10 @@
         <script src="ensilico.js"></script>
         <script>
             function Line() {
-                this.scale = 500 / 13;
                 this.player = new AutoPlayer({
                     position: {
-                        x: this.scale / 8,
-                        y: this.scale / 6
+                        x: 3,
+                        y: -3
                     },
                     minAngle: Scalar.toRadians(70),
                     maxAngle: Scalar.toRadians(160),
@@ -19,7 +18,7 @@
 
             Line.prototype.preferences = function() {
                 return {
-                    visualScale: this.scale,
+                    visualScale: 32,
                     stepsize: 0.001
                 };
             }
@@ -35,6 +34,7 @@
             }
 
             function AutoPlayer(properties) {
+                // Default values
                 this.position = {
                     x: 0,
                     y: 0
@@ -45,6 +45,7 @@
                 this.dutyCycle = 0.5;
                 this.responsiveness = 1;
 
+                // Allow caller to override
                 Platform.softCopy(this, properties);
 
                 this.angle = this.minAngle;
@@ -55,10 +56,7 @@
                 var target = (this.time < this.dutyCycle * this.period) ? this.minAngle : this.maxAngle;
                 this.angle = Scalar.lag(this.angle, target, this.responsiveness, stepsize);
                 if (!holdSteady) {
-                    this.time += stepsize;
-                    if (this.time > this.period) {
-                        this.time -= this.period;
-                    }
+                    this.time = (this.time + stepsize) % this.period;
                 }
             }
 
