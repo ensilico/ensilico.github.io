@@ -129,10 +129,6 @@ function Rod(properties) {
     Platform.softCopy(this, properties);
 }
 
-Rod.prototype.radius = function() {
-    return this.rodLength - this.pivotOffset;
-}
-
 Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition, targetVelocity) {
     // Steps per second (guarded)
     var sps = 1 / (stepsize + Scalar.tiny());
@@ -160,6 +156,15 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
 
     this.tipVelocity.load(velocity);
     this.tipPosition.addProduct(stepsize, velocity);
+}
+
+Rod.prototype.radius = function() {
+    return this.rodLength - this.pivotOffset;
+}
+
+Rod.prototype.storeTipPosition = function(tipPosition) {
+    tipPosition.load(this.tipPosition);
+    return this;
 }
 
 function Platform() {}
