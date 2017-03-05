@@ -38,7 +38,7 @@
                 //</DEBUG>
             }
 
-            function AutoPlayer(properties) {
+            function Bot(properties) {
                 // Default values
                 this.position = {
                     x: 0,
@@ -54,23 +54,29 @@
                 Platform.softCopy(this, properties);
 
                 this.angle = this.minAngle;
+                this.rate = 0;
                 this.time = 0;
             }
 
-            AutoPlayer.prototype.update = function(stepsize, holdSteady) {
+            Bot.prototype.update = function(stepsize, holdSteady) {
                 var target = (this.time < this.dutyCycle * this.period) ? this.minAngle : this.maxAngle;
-                this.angle = Scalar.lag(this.angle, target, this.responsiveness, stepsize);
+                this.rate = Scalar.lagRate(this.angle, target, this.responsiveness, stepsize);
+                this.angle += stepsize * this.rate;
                 if (!holdSteady) {
                     this.time = (this.time + stepsize) % this.period;
                 }
             }
 
-            AutoPlayer.prototype.getAngle = function() {
+            Bot.prototype.getAngle = function() {
                 return this.angle;
             }
 
-            AutoPlayer.prototype.storePosition = function(position) {
-                position.load(this.position.x, this.position.y);
+            Bot.prototype.getRate = function() {
+                return this.rate;
+            }
+
+            Bot.prototype.storePosition = function(position) {
+                position.load(this.position);
                 return this;
             }
        </script>
