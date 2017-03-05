@@ -59,6 +59,14 @@ Pair.prototype.multiplyBy = function(f) {
     return this;
 }
 
+// Caller is responsible for avoiding division by zero
+Pair.prototype.divideBy = function(f) {
+    var reciprocal = 1 / f;
+    this.x *= reciprocal;
+    this.y *= reciprocal;
+    return this;
+}
+
 Pair.prototype.rotateBy = function(angle) {
     var c = Math.cos(angle);
     var s = Math.sin(angle);
@@ -119,19 +127,29 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
     // Steps per second (guarded)
     var sps = 1 / (stepsize + Scalar.tiny());
 
-    var denominator =
-        sps * this.flexMass +
-        stepsize * this.flexSpring +
-        this.flexDamping +
-        this.flexDrag * this.velocity.norm();
-
     var force = new Pair();
     force
         .load(externalForce)
         .addProduct(this.flexMass, gravity)
-        .addProduct(sps * this.flexMass, this.velocity)
+        .addProduct(sps * this.flexMass, this.tipVelocity)
         .addProduct(this.flexSpring, targetPosition)
         .addProduct(this.flexDamping, targetVelocity);
+    force.subtractProjection(this.tipPosition);
+
+    var denominator =
+        sps * this.flexMass +
+        stepsize * this.flexSpring +
+        this.flexDamping +
+        this.flexDrag * this.tipVelocity.norm();
+    var velocity = new Pair();
+    velocity.load(force).divideBy(denominator);
+
+    var norm = this.tipPosition.norm();
+    var corrector = (this.length - this.pivotOffset - norm) / (stepsize * norm + Scalar.tiny());
+    velocity.addProduct(corrector, this.tipPosition);
+
+    this.tipVelocity.load(velocity);
+    this.tipPosition.addProduct(stepsize, velocity);
 }
 
 function Platform() {}
