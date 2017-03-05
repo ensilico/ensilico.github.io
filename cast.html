@@ -8,16 +8,34 @@
                     x: 0,
                     y: -9.81
                 });
+
+                var initialAngle = Scalar.toRadians(70);
                 this.bot = new Bot({
                     position: {
                         x: 3,
                         y: -3
                     },
-                    minAngle: Scalar.toRadians(70),
+                    minAngle: initialAngle,
                     maxAngle: Scalar.toRadians(160),
                     period: 3,
                     dutyCycle: 0.5,
                     responsiveness: 5
+                });
+
+                var rodLength = 3;
+                var pivotOffset = 0.2;
+                var radius = rodLength - pivotOffset;
+                this.rod = new Rod({
+                    rodLength: rodLength,
+                    pivotOffset: pivotOffset,
+                    flexMass: 0.1,
+                    flexSpring: 8.7,
+                    flexDamping: 0.13,
+                    flexDrag: 0.08,
+                    tipPosition: {
+                        x: radius * Math.cos(initialAngle),
+                        y: radius * Math.sin(initialAngle)
+                    }
                 });
             }
 
@@ -32,19 +50,17 @@
                 var stepsize = controls.stepsize;
                 this.bot.update(stepsize, controls.holdSteady);
 
-                var pivotPosition = new Pair();
-                this.bot.storePosition(pivotPosition);
-
                 var targetPosition = new Pair();
                 targetPosition.load({
-                    x: 3, // TODO: replace this with correct value from rod
+                    x: this.rod.radius(),
                     y: 0
                 });
                 targetPosition.rotateBy(this.bot.getAngle());
 
                 var targetVelocity = new Pair();
                 targetVelocity.loadCrossProduct(this.bot.getRate(), targetPosition);
-                targetPosition.add(pivotPosition);
+
+                this.rod.update(stepsize, this.gravity, new Pair(), targetPosition, targetVelocity);
             }
 
             Cast.prototype.visualize = function(context, elapsedTime) {
