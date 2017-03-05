@@ -1,5 +1,10 @@
 function Scalar() {}
 
+// A bit larger than sqrt(MIN_NORMAL)
+Scalar.tiny = function() {
+    return 1e-154;
+}
+
 Scalar.toRadians = function(degrees) {
     return degrees * Math.PI / 180;
 }
@@ -25,6 +30,10 @@ Scalar.lagRate = function(state, target, responsiveness, stepsize) {
 function Pair() {
     this.x = 0;
     this.y = 0;
+}
+
+Pair.prototype.norm = function() {
+    return Math.sqrt(this.dot(this));
 }
 
 Pair.prototype.dot = function(p) {
@@ -82,8 +91,47 @@ Pair.prototype.subtract = function(p) {
 // Subtract the projection of this onto p
 // leaving only the perpendicular component of this
 Pair.prototype.subtractProjection = function(p) {
-    var f = this.dot(p) / (p.x * p.x + p.y * p.y);
+    var f = this.dot(p) / (p.x * p.x + p.y * p.y + Scalar.tiny());
     return this.addProduct(-f, p);
+}
+
+// Pivots about the origin
+function Rod(properties) {
+    // Default values
+    this.length = 3;
+    this.pivotOffset = 0.2;
+    this.flexMass = 0.1;
+    this.flexSpring = 10;
+    this.flexDamping = 1;
+    this.flexDrag = 1;
+    this.tipPosition = new Pair();
+    this.tipPosition.load({
+        x: this.length - this.pivotOffset,
+        y: 0
+    });
+    this.tipVelocity = new Pair();
+
+    // Allow caller to override
+    Platform.softCopy(this, properties);
+}
+
+Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition, targetVelocity) {
+    // Steps per second (guarded)
+    var sps = 1 / (stepsize + Scalar.tiny());
+
+    var denominator =
+        sps * this.flexMass +
+        stepsize * this.flexSpring +
+        this.flexDamping +
+        this.flexDrag * this.velocity.norm();
+
+    var force = new Pair();
+    force
+        .load(externalForce)
+        .addProduct(this.flexMass, gravity)
+        .addProduct(sps * this.flexMass, this.velocity)
+        .addProduct(this.flexSpring, targetPosition)
+        .addProduct(this.flexDamping, targetVelocity);
 }
 
 function Platform() {}
