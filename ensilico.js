@@ -158,11 +158,11 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
     this.tipPosition.addProduct(stepsize, velocity);
 }
 
-Rod.prototype.getRodLength() {
+Rod.prototype.getRodLength = function() {
     return this.rodLength;
 }
 
-Rod.prototype.getPivotOffset() {
+Rod.prototype.getPivotOffset = function() {
     return this.pivotOffset;
 }
 
