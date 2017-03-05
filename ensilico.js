@@ -27,25 +27,32 @@ function Pair() {
     this.y = 0;
 }
 
+Pair.prototype.dot = function(p) {
+    return this.x * p.x + this.y * p.y;
+}
+
 Pair.prototype.load = function(p) {
     this.x = p.x;
     this.y = p.y;
     return this;
 }
 
-Pair.prototype.dot = function(p) {
-    return this.x * p.x + this.y * p.y;
+// Load this with the result of (0,0,z) X p
+Pair.prototype.loadCrossProduct = function(z, p) {
+    this.x = -z * p.y;
+    this.y = z * p.x;
+    return this;
+}
+
+Pair.prototype.multiplyBy = function(f) {
+    this.x *= f;
+    this.y *= f;
+    return this;
 }
 
 Pair.prototype.add = function(p) {
     this.x += p.x;
     this.y += p.y;
-    return this;
-}
-
-Pair.prototype.subtract = function(p) {
-    this.x -= p.x;
-    this.y -= p.y;
     return this;
 }
 
@@ -56,10 +63,9 @@ Pair.prototype.addProduct = function(f, p) {
     return this;
 }
 
-// Load this pair with the result of (0,0,z) X p
-Pair.prototype.loadCrossProduct = function(z, p) {
-    this.x = -z * p.y;
-    this.y = z * p.x;
+Pair.prototype.subtract = function(p) {
+    this.x -= p.x;
+    this.y -= p.y;
     return this;
 }
 
