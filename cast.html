@@ -2,7 +2,7 @@
     <head>
         <script src="ensilico.js"></script>
         <script>
-            function Line() {
+            function Cast() {
                 this.gravity = new Pair();
                 this.gravity.load({
                     x: 0,
@@ -21,14 +21,14 @@
                 });
             }
 
-            Line.prototype.preferences = function() {
+            Cast.prototype.preferences = function() {
                 return {
                     visualScale: 32,
                     stepsize: 0.001
                 };
             }
 
-            Line.prototype.update = function(controls) {
+            Cast.prototype.update = function(controls) {
                 var stepsize = controls.stepsize;
                 this.bot.update(stepsize, controls.holdSteady);
 
@@ -47,7 +47,7 @@
                 targetPosition.add(pivotPosition);
             }
 
-            Line.prototype.visualize = function(context, elapsedTime) {
+            Cast.prototype.visualize = function(context, elapsedTime) {
                 //<DEBUG>
                 var pivotPosition = new Pair();
                 this.bot.storePosition(pivotPosition);
@@ -115,7 +115,7 @@
             }
        </script>
     </head>
-    <body onload="Executive.start(new Line(), 'visual')">
+    <body onload="Executive.start(new Cast(), 'visual')">
         <canvas id="visual" width="800" height="600">
             Opps.
         </canvas>
