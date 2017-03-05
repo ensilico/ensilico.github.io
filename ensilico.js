@@ -17,15 +17,50 @@ Scalar.lag = function(state, target, responsiveness, stepsize) {
     return (k * target + state) / (k + 1);
 }
 
+// Returns rate for integration
+Scalar.lagRate = function(state, target, responsiveness, stepsize) {
+    return responsiveness * (target - state) / (responsiveness * stepsize + 1);
+}
+
 function Pair() {
     this.x = 0;
     this.y = 0;
 }
 
-Pair.prototype.load = function(x, y) {
-    this.x = x;
-    this.y = y;
+Pair.prototype.load = function(p) {
+    this.x = p.x;
+    this.y = p.y;
     return this;
+}
+
+Pair.prototype.dot = function(p) {
+    return this.x * p.x + this.y * p.y;
+}
+
+Pair.prototype.add = function(p) {
+    this.x += p.x;
+    this.y += p.y;
+    return this;
+}
+
+Pair.prototype.subtract = function(p) {
+    this.x -= p.x;
+    this.y -= p.y;
+    return this;
+}
+
+// Add scalar product
+Pair.prototype.addProduct = function(f, p) {
+    this.x += f * p.x;
+    this.y += f * p.y;
+    return this;
+}
+
+// Subtract the projection of this onto p
+// leaving only the perpendicular component of this
+Pair.prototype.subtractProjection = function(p) {
+    var f = this.dot(p) / (p.x * p.x + p.y * p.y);
+    return this.addProduct(-f, p);
 }
 
 function Platform() {}
