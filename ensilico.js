@@ -56,6 +56,13 @@ Pair.prototype.addProduct = function(f, p) {
     return this;
 }
 
+// Load this pair with the result of (0,0,z) X p
+Pair.prototype.loadCrossProduct = function(z, p) {
+    this.x = -z * p.y;
+    this.y = z * p.x;
+    return this;
+}
+
 // Subtract the projection of this onto p
 // leaving only the perpendicular component of this
 Pair.prototype.subtractProjection = function(p) {
