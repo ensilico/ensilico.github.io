@@ -53,6 +53,12 @@ Pair.prototype.loadCrossProduct = function(z, p) {
     return this;
 }
 
+Pair.prototype.loadLerp = function(p1, p2, t) {
+    this.x = (1 - t) * p1.x + t * p2.x;
+    this.y = (1 - t) * p1.y + t * p2.y;
+    return this;
+}
+
 Pair.prototype.multiplyBy = function(f) {
     this.x *= f;
     this.y *= f;
