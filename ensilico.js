@@ -106,7 +106,7 @@ Pair.prototype.subtractProjection = function(p) {
 // Pivots about the origin
 function Rod(properties) {
     // Default values
-    this.length = 3;
+    this.tipLength = 3;
     this.pivotOffset = 0.2;
     this.flexMass = 0.1;
     this.flexSpring = 10;
@@ -114,7 +114,7 @@ function Rod(properties) {
     this.flexDrag = 1;
     this.tipPosition = new Pair();
     this.tipPosition.load({
-        x: this.length - this.pivotOffset,
+        x: this.tipLength - this.pivotOffset,
         y: 0
     });
     this.tipVelocity = new Pair();
@@ -145,7 +145,7 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
     velocity.load(force).divideBy(denominator);
 
     var norm = this.tipPosition.norm();
-    var corrector = (this.length - this.pivotOffset - norm) / (stepsize * norm + Scalar.tiny());
+    var corrector = (this.tipLength - this.pivotOffset - norm) / (stepsize * norm + Scalar.tiny());
     velocity.addProduct(corrector, this.tipPosition);
 
     this.tipVelocity.load(velocity);
