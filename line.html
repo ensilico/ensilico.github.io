@@ -3,7 +3,7 @@
         <script src="ensilico.js"></script>
         <script>
             function Line() {
-                this.player = new AutoPlayer({
+                this.bot = new Bot({
                     position: {
                         x: 3,
                         y: -3
@@ -25,16 +25,16 @@
 
             Line.prototype.update = function(controls) {
                 var stepsize = controls.stepsize;
-                this.player.update(stepsize, controls.holdSteady);
+                this.bot.update(stepsize, controls.holdSteady);
                 //... use this.player.getAngle() and this.player.storePosition(p)
             }
 
             Line.prototype.visualize = function(context, elapsedTime) {
                 //<DEBUG>
                 var p = new Pair();
-                this.player.storePosition(p);
+                this.bot.storePosition(p);
                 context.moveTo(p.x, p.y);
-                context.lineTo(p.x + 3 * Math.cos(this.player.angle), p.y + 3 * Math.sin(this.player.angle));
+                context.lineTo(p.x + 3 * Math.cos(this.bot.getAngle()), p.y + 3 * Math.sin(this.bot.getAngle()));
                 //</DEBUG>
             }
 
