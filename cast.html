@@ -64,28 +64,38 @@
             }
 
             Cast.prototype.visualize = function(context, elapsedTime) {
-                //<DEBUG>
+                context.save();
+
                 var pivotPosition = new Pair();
                 this.bot.storePosition(pivotPosition);
-                context.moveTo(pivotPosition.x, pivotPosition.y);
+                context.translate(pivotPosition.x, pivotPosition.y);
 
-                var targetPosition = new Pair();
-                targetPosition.load({
-                    x: 3, // TODO: replace this with correct value from rod
+                var targetAxis = new Pair();
+                targetAxis.load({
+                    x: 1,
                     y: 0
                 });
-                targetPosition.rotateBy(this.bot.getAngle());
+                targetAxis.rotateBy(this.bot.getAngle());
 
-                var targetVelocity = new Pair();
-                targetVelocity.loadCrossProduct(this.bot.getRate(), targetPosition);
-                targetPosition.add(pivotPosition);
-                context.lineTo(targetPosition.x, targetPosition.y);
+                var rodAxis = new Pair();
+                this.rod.storeTipPosition(rodAxis);
+                rodAxis.divideBy(rodAxis.norm() + Scalar.tiny());
 
-                var blur = new Pair();
-                blur.load(targetVelocity).multiplyBy(-Math.min(elapsedTime, 0.1));
-                blur.add(targetPosition);
-                context.lineTo(blur.x, blur.y);
-                //</DEBUG>
+                // Piecewise linear approximation of rod flex curve
+                var p = new Pair();
+                var NUM_SEGMENTS = 20;
+                for (var i = 0; i <= NUM_SEGMENTS; i++) {
+                    var t = i / NUM_SEGMENTS;
+                    var r = t * this.rod.getRodLength() - this.rod.getPivotOffset();
+                    p.loadLerp(targetAxis, rodAxis, t).multiplyBy(r);
+                    if (i == 0) {
+                        context.moveTo(p.x, p.y);
+                    } else {
+                        context.lineTo(p.x, p.y);
+                    }
+                }
+
+                context.restore();
             }
 
             function Bot(properties) {
