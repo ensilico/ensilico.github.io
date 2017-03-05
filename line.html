@@ -62,7 +62,7 @@
 
                 var blur = new Pair();
                 blur.load(targetVelocity);
-                blur.mutliplyBy(Math.min(elapsedTime, 0.1));
+                blur.multiplyBy(Math.min(elapsedTime, 0.1));
                 blur.add(targetPosition);
                 context.lineTo(blur.x, blur.y);
                 //</DEBUG>
