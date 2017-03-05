@@ -50,6 +50,16 @@ Pair.prototype.multiplyBy = function(f) {
     return this;
 }
 
+Pair.prototype.rotateBy = function(angle) {
+    var c = Math.cos(angle);
+    var s = Math.sin(angle);
+    var x = this.x * c - this.y * s;
+    var y = this.x * s + this.y * c;
+    this.x = x;
+    this.y = y;
+    return this;
+}
+
 Pair.prototype.add = function(p) {
     this.x += p.x;
     this.y += p.y;
