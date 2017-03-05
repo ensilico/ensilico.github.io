@@ -35,7 +35,11 @@
                     x: 3, // TODO: replace this with correct value from rod
                     y: 0
                 });
-                targetPosition.rotateBy(this.bot.getAngle()).add(pivotPosition);
+                targetPosition.rotateBy(this.bot.getAngle());
+
+                var targetVelocity = new Pair();
+                targetVelocity.loadCrossProduct(this.bot.getRate(), targetPosition);
+                targetPosition.add(pivotPosition);
             }
 
             Line.prototype.visualize = function(context, elapsedTime) {
@@ -49,8 +53,18 @@
                     x: 3, // TODO: replace this with correct value from rod
                     y: 0
                 });
-                targetPosition.rotateBy(this.bot.getAngle()).add(pivotPosition);
+                targetPosition.rotateBy(this.bot.getAngle());
+
+                var targetVelocity = new Pair();
+                targetVelocity.loadCrossProduct(this.bot.getRate(), targetPosition);
+                targetPosition.add(pivotPosition);
                 context.lineTo(targetPosition.x, targetPosition.y);
+
+                var blur = new Pair();
+                blur.load(targetVelocity);
+                blur.mutliplyBy(Math.min(elapsedTime, 0.1));
+                blur.add(targetPosition);
+                context.lineTo(blur.x, blur.y);
                 //</DEBUG>
             }
 
