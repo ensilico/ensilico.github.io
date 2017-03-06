@@ -22,22 +22,15 @@
                     responsiveness: 5
                 });
 
-                // TODO: Introduce an align() method on Rod instead to be called post-construction
-                var rodLength = 3;
-                var pivotOffset = 0.2;
-                var radius = rodLength - pivotOffset;
                 this.rod = new Rod({
-                    rodLength: rodLength,
-                    pivotOffset: pivotOffset,
+                    rodLength: 3,
+                    pivotOffset: 0.2,
                     flexMass: 0.1,
                     flexSpring: 8.7,
                     flexDamping: 0.13,
-                    flexDrag: 0.08,
-                    tipPosition: {
-                        x: radius * Math.cos(initialAngle),
-                        y: radius * Math.sin(initialAngle)
-                    }
+                    flexDrag: 0.08
                 });
+                this.rod.alignTo(initialAngle);
             }
 
             Cast.prototype.preferences = function() {
@@ -51,13 +44,8 @@
                 var stepsize = controls.stepsize;
                 this.bot.update(stepsize, controls.holdSteady);
 
-                // TODO: consider a loadPolar() method on Pair
                 var targetPosition = new Pair();
-                targetPosition.load({
-                    x: this.rod.radius(),
-                    y: 0
-                });
-                targetPosition.rotateBy(this.bot.angle);
+                targetPosition.loadPolar(this.rod.radius(), this.bot.angle);
 
                 var targetVelocity = new Pair();
                 targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
@@ -69,25 +57,18 @@
                 context.save();
                 context.translate(this.bot.position.x, this.bot.position.y);
 
-                // TODO: loadPolar() as mentioned above
                 var targetAxis = new Pair();
-                targetAxis.load({
-                    x: 1,
-                    y: 0
-                });
-                targetAxis.rotateBy(this.bot.angle);
+                targetAxis.loadPolar(1, this.bot.angle);
 
-                // TODO: eliminate redundancy as mentioned above
                 var rodAxis = new Pair();
-                this.rod.storeTipPosition(rodAxis);
-                rodAxis.divideBy(rodAxis.norm() + Scalar.tiny());
+                rodAxis.load(this.rod.tipPosition).divideBy(rodAxis.norm() + Scalar.tiny());
 
                 // Piecewise linear approximation of rod flex curve
                 var p = new Pair();
                 var NUM_SEGMENTS = 20;
                 for (var i = 0; i <= NUM_SEGMENTS; i++) {
                     var t = i / NUM_SEGMENTS;
-                    var r = t * this.rod.getRodLength() - this.rod.getPivotOffset();
+                    var r = t * this.rod.rodLength - this.rod.pivotOffset;
                     p.loadLerp(targetAxis, rodAxis, t).multiplyBy(r);
                     if (i == 0) {
                         context.moveTo(p.x, p.y);
