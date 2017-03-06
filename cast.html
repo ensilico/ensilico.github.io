@@ -22,6 +22,7 @@
                     responsiveness: 5
                 });
 
+                // TODO: Introduce an align() method on Rod instead to be called post-construction
                 var rodLength = 3;
                 var pivotOffset = 0.2;
                 var radius = rodLength - pivotOffset;
@@ -50,33 +51,33 @@
                 var stepsize = controls.stepsize;
                 this.bot.update(stepsize, controls.holdSteady);
 
+                // TODO: consider a loadPolar() method on Pair
                 var targetPosition = new Pair();
                 targetPosition.load({
                     x: this.rod.radius(),
                     y: 0
                 });
-                targetPosition.rotateBy(this.bot.getAngle());
+                targetPosition.rotateBy(this.bot.angle);
 
                 var targetVelocity = new Pair();
-                targetVelocity.loadCrossProduct(this.bot.getRate(), targetPosition);
+                targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
 
                 this.rod.update(stepsize, this.gravity, new Pair(), targetPosition, targetVelocity);
             }
 
             Cast.prototype.visualize = function(context, elapsedTime) {
                 context.save();
+                context.translate(this.bot.position.x, this.bot.position.y);
 
-                var pivotPosition = new Pair();
-                this.bot.storePosition(pivotPosition);
-                context.translate(pivotPosition.x, pivotPosition.y);
-
+                // TODO: loadPolar() as mentioned above
                 var targetAxis = new Pair();
                 targetAxis.load({
                     x: 1,
                     y: 0
                 });
-                targetAxis.rotateBy(this.bot.getAngle());
+                targetAxis.rotateBy(this.bot.angle);
 
+                // TODO: eliminate redundancy as mentioned above
                 var rodAxis = new Pair();
                 this.rod.storeTipPosition(rodAxis);
                 rodAxis.divideBy(rodAxis.norm() + Scalar.tiny());
@@ -125,19 +126,6 @@
                 if (!holdSteady) {
                     this.time = (this.time + stepsize) % this.period;
                 }
-            }
-
-            Bot.prototype.getAngle = function() {
-                return this.angle;
-            }
-
-            Bot.prototype.getRate = function() {
-                return this.rate;
-            }
-
-            Bot.prototype.storePosition = function(position) {
-                position.load(this.position);
-                return this;
             }
        </script>
     </head>
