@@ -46,6 +46,12 @@ Pair.prototype.load = function(p) {
     return this;
 }
 
+Pair.prototype.loadPolar = function(r, theta) {
+    this.x = r * Math.cos(theta);
+    this.y = r * Math.sin(theta);
+    return this;
+}
+
 // Load this with the result of (0,0,z) X p
 Pair.prototype.loadCrossProduct = function(z, p) {
     this.x = -z * p.y;
@@ -119,14 +125,20 @@ function Rod(properties) {
     this.flexDamping = 1;
     this.flexDrag = 1;
     this.tipPosition = new Pair();
-    this.tipPosition.load({
-        x: this.rodLength - this.pivotOffset,
-        y: 0
-    });
+    this.alignTo(0);
     this.tipVelocity = new Pair();
 
     // Allow caller to override
     Platform.softCopy(this, properties);
+}
+
+Rod.prototype.radius = function() {
+    return this.rodLength - this.pivotOffset;
+}
+
+Rod.prototype.alignTo = function(angle) {
+    this.tipPosition.loadPolar(this.radius(), angle);
+    return this;
 }
 
 Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition, targetVelocity) {
@@ -156,23 +168,6 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
 
     this.tipVelocity.load(velocity);
     this.tipPosition.addProduct(stepsize, velocity);
-}
-
-Rod.prototype.getRodLength = function() {
-    return this.rodLength;
-}
-
-Rod.prototype.getPivotOffset = function() {
-    return this.pivotOffset;
-}
-
-Rod.prototype.radius = function() {
-    return this.rodLength - this.pivotOffset;
-}
-
-Rod.prototype.storeTipPosition = function(tipPosition) {
-    tipPosition.load(this.tipPosition);
-    return this;
 }
 
 function Platform() {}
