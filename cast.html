@@ -61,7 +61,7 @@
                 targetAxis.loadPolar(1, this.bot.angle);
 
                 var rodAxis = new Pair();
-                rodAxis.load(this.rod.tipPosition).divideBy(rodAxis.norm() + Scalar.tiny());
+                rodAxis.load(this.rod.tipPosition).normalize();
 
                 // Piecewise linear approximation of rod flex curve
                 var p = new Pair();
