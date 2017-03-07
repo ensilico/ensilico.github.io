@@ -119,6 +119,10 @@ Pair.prototype.subtractProjection = function(p) {
     return this.addProduct(-f, p);
 }
 
+Pair.prototype.normalize = function() {
+    return this.divideBy(this.norm() + Scalar.tiny());
+}
+
 // Pivots about the origin
 function Rod(properties) {
     // Default values
