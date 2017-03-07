@@ -16,6 +16,10 @@ Scalar.rationalMin = function(numerator, denominator, maxRatio) {
     return fn / Math.max(numerator, fd);
 }
 
+Scalar.lerp = function(f1, f2, t) {
+    return (1 - t) * f1 + t * f2;
+}
+
 // Returns next state
 Scalar.lag = function(state, target, responsiveness, stepsize) {
     var k = responsiveness * stepsize;
