@@ -68,7 +68,7 @@
                 var NUM_SEGMENTS = 20;
                 for (var i = 0; i <= NUM_SEGMENTS; i++) {
                     var t = i / NUM_SEGMENTS;
-                    var r = t * this.rod.rodLength - this.rod.pivotOffset;
+                    var r = Scalar.lerp(-this.rod.pivotOffset, this.rod.radius(), t);
                     p.loadLerp(targetAxis, rodAxis, t).multiplyBy(r);
                     if (i == 0) {
                         context.moveTo(p.x, p.y);
