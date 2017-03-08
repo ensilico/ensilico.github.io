@@ -206,6 +206,7 @@ Platform.softCopy = function(dst, src) {
 function Executive(simulation, canvas) {
     this.simulation = simulation;
     this.canvas = canvas;
+    this.simulationLeadTime = 0;
 
     // Default values
     var preferences = {
@@ -226,8 +227,6 @@ function Executive(simulation, canvas) {
 }
 
 Executive.previousTimestamp = null;
-
-Executive.simulationLeadTime = 0;
 
 Executive.instances = [];
 
