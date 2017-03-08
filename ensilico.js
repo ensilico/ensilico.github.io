@@ -252,8 +252,8 @@ Executive.nextFrame = function() {
 Executive.onFrame = function(timestamp) {
     var elapsedTime = (timestamp - Executive.previousTimestamp) / 1000;
     Executive.previousTimestamp = timestamp;
-    for (var instance in Executive.instances) {
-        instance.update(elapsedTime);
+    for (var i in Executive.instances) {
+        Executive.instances[i].update(elapsedTime);
     }
     Executive.nextFrame();
 }
