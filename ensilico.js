@@ -255,6 +255,7 @@ Executive.onFrame = function(timestamp) {
     for (var instance in Executive.instances) {
         instance.update(elapsedTime);
     }
+    Executive.nextFrame();
 }
 
 Executive.prototype.update = function(elapsedTime) {
@@ -287,6 +288,4 @@ Executive.prototype.update = function(elapsedTime) {
     this.simulation.visualize(context, elapsedTime);
     context.restore();
     context.stroke();
-
-    this.nextFrame();
 }
