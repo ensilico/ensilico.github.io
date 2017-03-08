@@ -203,12 +203,9 @@ Platform.softCopy = function(dst, src) {
     return dst;
 }
 
-function Executive(simulation, canvasId, mainWindow) {
+function Executive(simulation, canvas) {
     this.simulation = simulation;
-    this.canvasId = canvasId;
-    this.mainWindow = mainWindow;
-    this.previousTimestamp = null;
-    this.simulationLeadTime = 0;
+    this.canvas = canvas;
 
     // Default values
     var preferences = {
@@ -228,28 +225,39 @@ function Executive(simulation, canvasId, mainWindow) {
     this.maxStepsPerFrame = preferences.maxStepsPerFrame;
 }
 
-// A convenience method with a dependency on the window object
+Executive.previousTimestamp = null;
+
+Executive.simulationLeadTime = 0;
+
+Executive.instances = [];
+
+// An attempt to centralize the dependency
+Executive.mainWindow = function() {
+    return window;
+}
+
 Executive.start = function(simulation, canvasId) {
-    var executive = new Executive(simulation, canvasId, window);
-    executive.startSimulation();
+    var canvas = Executive.mainWindow().document.getElementById(canvasId);
+    Executive.instances.push(new Executive(simulation, canvas));
+    if (!Executive.previousTimestamp) {
+        Executive.previousTimestamp = Executive.mainWindow().performance.now();
+        Executive.nextFrame();
+    }
 }
 
-Executive.prototype.startSimulation = function() {
-    this.previousTimestamp = this.mainWindow.performance.now();
-    this.nextFrame();
+Executive.nextFrame = function() {
+    Executive.mainWindow().requestAnimationFrame(Executive.onFrame);
 }
 
-Executive.prototype.nextFrame = function() {
-    var self = this;
-    this.mainWindow.requestAnimationFrame(function(timestamp) {
-        self.update(timestamp);
-    });
+Executive.onFrame = function(timestamp) {
+    var elapsedTime = (timestamp - Executive.previousTimestamp) / 1000;
+    Executive.previousTimestamp = timestamp;
+    for (var instance in Executive.instances) {
+        instance.update(elapsedTime);
+    }
 }
 
-Executive.prototype.update = function(timestamp) {
-    var elapsedTime = (timestamp - this.previousTimestamp) / 1000;
-    this.previousTimestamp = timestamp;
-
+Executive.prototype.update = function(elapsedTime) {
     var stepsize = this.controls.stepsize;
 
     // Adjust for simulation lead from previous frame
@@ -268,10 +276,9 @@ Executive.prototype.update = function(timestamp) {
     }
 
     // Simple visualization
-    var canvas = this.mainWindow.document.getElementById(this.canvasId);
-    var w = canvas.width;
-    var h = canvas.height;
-    var context = canvas.getContext("2d");
+    var w = this.canvas.width;
+    var h = this.canvas.height;
+    var context = this.canvas.getContext("2d");
     context.clearRect(0, 0, w, h);
     context.save();
     context.translate(w / 2, h / 2);
