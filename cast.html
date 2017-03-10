@@ -50,7 +50,7 @@
                 var targetVelocity = new Pair();
                 targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
 
-                this.rod.update(stepsize, this.gravity, new Pair(), targetPosition, targetVelocity);
+                this.rod.update(stepsize, this.gravity, Pair.ZERO, targetPosition, targetVelocity);
             }
 
             Cast.prototype.visualize = function(context, elapsedTime) {
