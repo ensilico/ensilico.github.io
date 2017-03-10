@@ -280,8 +280,9 @@ Executive.prototype.update = function(elapsedTime) {
     }
 
     // Simple visualization
-    var w = this.context.canvas.width;
-    var h = this.context.canvas.height;
+    var context = this.context;
+    var w = context.canvas.width;
+    var h = context.canvas.height;
     context.clearRect(0, 0, w, h);
     context.save();
     context.translate(w / 2, h / 2);
