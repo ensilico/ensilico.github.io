@@ -36,6 +36,8 @@ function Pair() {
     this.y = 0;
 }
 
+Pair.ZERO = new Pair();
+
 Pair.prototype.norm = function() {
     return Math.sqrt(this.dot(this));
 }
