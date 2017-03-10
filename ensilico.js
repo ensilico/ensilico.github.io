@@ -205,9 +205,9 @@ Platform.softCopy = function(dst, src) {
     return dst;
 }
 
-function Executive(simulation, canvas) {
+function Executive(simulation, context) {
     this.simulation = simulation;
-    this.canvas = canvas;
+    this.context = context;
     this.simulationLeadTime = 0;
 
     // Default values
@@ -239,7 +239,8 @@ Executive.mainWindow = function() {
 
 Executive.start = function(simulation, canvasId) {
     var canvas = Executive.mainWindow().document.getElementById(canvasId);
-    Executive.instances.push(new Executive(simulation, canvas));
+    var context = canvas.getContext("2d");
+    Executive.instances.push(new Executive(simulation, context));
     if (!Executive.previousTimestamp) {
         Executive.previousTimestamp = Executive.mainWindow().performance.now();
         Executive.nextFrame();
@@ -279,9 +280,8 @@ Executive.prototype.update = function(elapsedTime) {
     }
 
     // Simple visualization
-    var w = this.canvas.width;
-    var h = this.canvas.height;
-    var context = this.canvas.getContext("2d");
+    var w = this.context.canvas.width;
+    var h = this.context.canvas.height;
     context.clearRect(0, 0, w, h);
     context.save();
     context.translate(w / 2, h / 2);
