@@ -82,13 +82,14 @@
                         context.lineTo(p.x, p.y);
                     }
                 }
+                context.strokeStyle = "#ff0000";
 
                 // Rod flex curve
                 var r = -this.rod.pivotOffset;
                 context.moveTo(r * targetAxis.x, r * targetAxis.y);
 
                 r = 0.5 * this.rod.radius();
-                context.quadraticTo(r * targetAxis.x, r * targetAxis.y, this.rod.tipPosition.x, this.rod.tipPosition.y);
+                context.quadraticCurveTo(r * targetAxis.x, r * targetAxis.y, this.rod.tipPosition.x, this.rod.tipPosition.y);
 
                 context.restore();
             }
