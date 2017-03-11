@@ -70,6 +70,7 @@
                 rodAxis.load(this.rod.tipPosition).normalize();
 
                 // Piecewise linear approximation of rod flex curve
+                context.strokeStyle = "#ff00ff";
                 var p = new Pair();
                 var NUM_SEGMENTS = 20;
                 for (var i = 0; i <= NUM_SEGMENTS; i++) {
