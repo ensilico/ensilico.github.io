@@ -63,36 +63,14 @@
                 context.save();
                 context.translate(this.bot.position.x, this.bot.position.y);
 
-                var targetAxis = new Pair();
-                targetAxis.loadPolar(1, this.bot.angle);
-
-                var rodAxis = new Pair();
-                rodAxis.load(this.rod.tipPosition).normalize();
-
-                // Piecewise linear approximation of rod flex curve
-                context.strokeStyle = "#ff00ff";
-                var p = new Pair();
-                var NUM_SEGMENTS = 20;
-                for (var i = 0; i <= NUM_SEGMENTS; i++) {
-                    var t = i / NUM_SEGMENTS;
-                    var r = Scalar.lerp(-this.rod.pivotOffset, this.rod.radius(), t);
-                    p.loadLerp(targetAxis, rodAxis, t).multiplyBy(r);
-                    if (i == 0) {
-                        context.moveTo(p.x, p.y);
-                    } else {
-                        context.lineTo(p.x, p.y);
-                    }
-                }
-                context.stroke();
-                context.beginPath();
-                context.strokeStyle = "#ff0000";
-
                 // Rod flex curve
                 var r = -this.rod.pivotOffset;
-                context.moveTo(r * targetAxis.x, r * targetAxis.y);
+                var x = Math.cos(this.bot.angle);
+                var y = Math.sin(this.bot.angle);
+                context.moveTo(r * x, r * y);
 
                 r = 0.5 * this.rod.radius();
-                context.quadraticCurveTo(r * targetAxis.x, r * targetAxis.y, this.rod.tipPosition.x, this.rod.tipPosition.y);
+                context.quadraticCurveTo(r * x, r * y, this.rod.tipPosition.x, this.rod.tipPosition.y);
 
                 context.restore();
             }
