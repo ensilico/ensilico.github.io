@@ -31,6 +31,12 @@
                     flexDrag: 0.08
                 });
                 this.rod.alignTo(initialAngle);
+
+                // Avoid object allocation in inner loop
+                this.reusage = {
+                    targetPosition: new Pair(),
+                    targetVelocity: new Pair()
+                };
             }
 
             Cast.prototype.preferences = function() {
@@ -44,10 +50,10 @@
                 var stepsize = controls.stepsize;
                 this.bot.update(stepsize, controls.holdSteady);
 
-                var targetPosition = new Pair();
+                var targetPosition = this.reusage.targetPosition;
                 targetPosition.loadPolar(this.rod.radius(), this.bot.angle);
 
-                var targetVelocity = new Pair();
+                var targetVelocity = this.reusage.targetVelocity;
                 targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
 
                 this.rod.update(stepsize, this.gravity, Pair.ZERO, targetPosition, targetVelocity);
