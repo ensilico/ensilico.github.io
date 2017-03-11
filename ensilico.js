@@ -256,12 +256,12 @@ Executive.onFrame = function(timestamp) {
     Executive.previousTimestamp = timestamp;
     var len = Executive.instances.length;
     for (var i = 0; i < len; i++) {
-        Executive.instances[i].update(elapsedTime);
+        Executive.instances[i].onFrame(elapsedTime);
     }
     Executive.nextFrame();
 }
 
-Executive.prototype.update = function(elapsedTime) {
+Executive.prototype.onFrame = function(elapsedTime) {
     var stepsize = this.controls.stepsize;
 
     // Adjust for simulation lead from previous frame
