@@ -140,6 +140,12 @@ function Rod(properties) {
 
     // Allow caller to override
     Platform.softCopy(this, properties);
+
+    // Avoid object allocation in inner loop
+    this.reusage = {
+        force: new Pair(),
+        velocity: new Pair()
+    };
 }
 
 Rod.prototype.radius = function() {
@@ -155,7 +161,7 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
     // Steps per second (guarded)
     var sps = 1 / (stepsize + Scalar.tiny());
 
-    var force = new Pair();
+    var force = this.reusage.force;
     force
         .load(externalForce)
         .addProduct(this.flexMass, gravity)
@@ -169,7 +175,7 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
         stepsize * this.flexSpring +
         this.flexDamping +
         this.flexDrag * this.tipVelocity.norm();
-    var velocity = new Pair();
+    var velocity = this.reusage.velocity;
     velocity.load(force).divideBy(denominator);
 
     var norm = this.tipPosition.norm();
