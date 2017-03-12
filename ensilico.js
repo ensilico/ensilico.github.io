@@ -276,13 +276,18 @@ Wire.prototype.storeTopEndForce = function(gravity, topEndForce) {
 }
 
 Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEndVelocity, topEndPosition, topEndVelocity) {
+    // Steps per second (guarded)
+    var sps = 1 / (stepsize + Scalar.tiny());
+
     this.position[0].load(bottomEndPosition);
     this.velocity[0].load(bottomEndVelocity);
     this.position[this.numSegments].load(topEndPosition);
     this.velocity[this.numSegments].load(topEndVelocity);
     this.updateAxes();
 
-    //...
+    for (var i = 1; i < this.numSegments; i++) {
+        this.reusage.lowerForce.loadProduct(sps * this.flexMass, this.velocity[i]);
+    }
 }
 
 function Platform() {}
