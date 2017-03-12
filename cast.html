@@ -65,8 +65,8 @@
                     this.rod.tipVelocity,
                     this.lurePosition,
                     this.lureVelocity);
-                this.wire.storeBottomEndForce(this.reusage.bottomEndForce);
-                this.wire.storeTopEndForce(this.reusage.topEndForce);
+                this.wire.storeBottomEndForce(this.gravity, this.reusage.bottomEndForce);
+                this.wire.storeTopEndForce(this.gravity, this.reusage.topEndForce);
                 this.reusage.topEndForce
                     .addProduct(this.lureMass, this.gravity)
                     .subtractProduct(this.lureDrag * this.lureVelocity.norm(), this.lureVelocity);
