@@ -70,7 +70,7 @@
                 this.reusage.topEndForce
                     .addProduct(this.lureMass, this.gravity)
                     .subtractProduct(this.lureDrag * this.lureVelocity.norm(), this.lureVelocity);
-                this.lureVelocity.addProduct(stepsize, this.reusage.topEndForce);
+                this.lureVelocity.addProduct(stepsize / this.lureMass, this.reusage.topEndForce);
                 this.lurePosition.addProduct(stepsize, this.lureVelocity);
 
                 this.bot.update(stepsize, controls.holdSteady);
