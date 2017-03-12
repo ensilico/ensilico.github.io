@@ -32,9 +32,7 @@
                 });
                 this.rod.alignTo(initialAngle);
 
-                var couplerPosition = new Pair();
-                couplerPosition.load(this.bot.position).add(this.rod.tipPostion);
-                this.wire = new Wire({}, couplerPosition);
+                this.wire = new Wire({}, this.rod.tipPostion);
 
                 // Avoid object allocation in inner loop
                 this.reusage = {
