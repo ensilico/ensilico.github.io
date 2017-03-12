@@ -178,20 +178,19 @@ Rod.prototype.alignTo = function(angle) {
 }
 
 Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition, targetVelocity) {
-    // Steps per second (guarded)
-    var sps = 1 / (stepsize + Scalar.tiny());
+    var massRate = this.flexMass / (stepsize + Scalar.tiny());
 
     var force = this.reusage.force;
     force
         .load(externalForce)
         .addProduct(this.flexMass, gravity)
-        .addProduct(sps * this.flexMass, this.tipVelocity)
+        .addProduct(massRate, this.tipVelocity)
         .addProduct(this.flexSpring, targetPosition)
         .addProduct(this.flexDamping, targetVelocity);
     force.subtractProjection(this.tipPosition);
 
     var denominator =
-        sps * this.flexMass +
+        massRate +
         stepsize * this.flexSpring +
         this.flexDamping +
         this.flexDrag * this.tipVelocity.norm();
@@ -276,8 +275,7 @@ Wire.prototype.storeTopEndForce = function(gravity, topEndForce) {
 }
 
 Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEndVelocity, topEndPosition, topEndVelocity) {
-    // Steps per second (guarded)
-    var sps = 1 / (stepsize + Scalar.tiny());
+    var massRate = this.mass / (stepsize + Scalar.tiny());
 
     this.position[0].load(bottomEndPosition);
     this.velocity[0].load(bottomEndVelocity);
@@ -286,7 +284,7 @@ Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEnd
     this.updateAxes();
 
     for (var i = 1; i < this.numSegments; i++) {
-        this.reusage.lowerForce.loadProduct(sps * this.flexMass, this.velocity[i]);
+        this.reusage.lowerForce.loadProduct(massRate, this.velocity[i]);
     }
 }
 
