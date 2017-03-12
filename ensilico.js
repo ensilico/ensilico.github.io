@@ -262,8 +262,8 @@ Wire.prototype.updateAxes = function() {
 
 // Assume i to be greater than or equal to 0 and less than this.numSegments
 Wire.prototype.scalarForce = function(i) {
-    this.reusage.deltaPosition.loadDelta(this.position[i+1] - this.position[i]);
-    this.reusage.deltaVelocity.loadDelta(this.velocity[i+1] - this.velocity[i]);
+    this.reusage.deltaPosition.loadDelta(this.position[i+1], this.position[i]);
+    this.reusage.deltaVelocity.loadDelta(this.velocity[i+1], this.velocity[i]);
     this.reusage.accumulator
         .loadProduct(this.spring, this.reusage.deltaPosition)
         .addProduct(this.damping, this.reusage.deltaVelocity);
