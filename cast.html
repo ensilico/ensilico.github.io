@@ -9,14 +9,14 @@
                     y: -9.81
                 });
 
-                var initialAngle = Scalar.toRadians(70);
+                var initialAngle = Scalar.toRadians(40);
                 this.bot = new Bot({
                     position: {
                         x: 3,
                         y: -3
                     },
                     minAngle: initialAngle,
-                    maxAngle: Scalar.toRadians(160),
+                    maxAngle: Scalar.toRadians(170),
                     period: 3,
                     dutyCycle: 0.5,
                     responsiveness: 5
@@ -34,7 +34,7 @@
 
                 this.wire = new Wire({}, this.rod.tipPosition);
                 this.lureMass = 0.001;
-                this.lureDrag = 0.01;
+                this.lureDrag = 0.003;
                 this.lurePosition = new Pair();
                 this.lurePosition.load(this.wire.position[this.wire.numSegments]);
                 this.lureVelocity = new Pair();
