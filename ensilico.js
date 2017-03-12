@@ -273,6 +273,16 @@ Wire.prototype.storeBottomEndForce = function(gravity, bottomEndForce) {
     bottomEndForce.loadProduct(this.mass, gravity).subtractProduct(this.forceScalar(i), this.axis[i]);
 }
 
+Wire.prototype.update = function(stepsize, gravity, topEndPosition, topEndVelocity, bottomEndPosition, bottomEndVelocity) {
+    this.position[0].load(topEndPosition);
+    this.velocity[0].load(topEndVelocity);
+    this.position[this.numSegments].load(bottomEndPosition);
+    this.velocity[this.numSegments].load(bottomEndVelocity);
+    this.updateAxes();
+
+    //...
+}
+
 function Platform() {}
 
 // Copies values from src for corresponding properties in dst
