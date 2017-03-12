@@ -78,6 +78,12 @@ Pair.prototype.loadCrossProduct = function(z, p) {
     return this;
 }
 
+Pair.prototype.loadMidpoint = function(p1, p2) {
+    this.x = 0.5 * (p1.x + p2.x);
+    this.y = 0.5 * (p1.y + p2.y);
+    return this;
+}
+
 Pair.prototype.loadLerp = function(p1, p2, t) {
     this.x = (1 - t) * p1.x + t * p2.x;
     this.y = (1 - t) * p1.y + t * p2.y;
@@ -304,6 +310,19 @@ Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEnd
             .add(this.reusage.lowerForce)
             .divideBy(massRate + fluid);
         this.position[i].addProduct(stepsize, this.velocity[i]);
+    }
+}
+
+Wire.prototype.visualize = function(context, elapsedTime) {
+    context.moveTo(this.position[0]);
+    var len = this.numSegments + 1;
+    for (var i = 0; i < len; i++) {
+        this.reusage.accumulator.loadMidpoint(this.position[i], this.position[Math.min(i+1, len-1)]);
+        context.quadraticCurveTo(
+            this.position[i].x,
+            this.position[i].y,
+            this.reusage.accumulator.x,
+            this.reusage.accumulator.y);
     }
 }
 
