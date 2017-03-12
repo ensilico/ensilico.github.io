@@ -9,16 +9,16 @@
                     y: -9.81
                 });
 
-                var initialAngle = Scalar.toRadians(10);
+                var initialAngle = Scalar.toRadians(20);
                 this.bot = new Bot({
                     position: {
                         x: 3,
                         y: -3
                     },
                     minAngle: initialAngle,
-                    maxAngle: Scalar.toRadians(150),
+                    maxAngle: Scalar.toRadians(140),
                     period: 3,
-                    dutyCycle: 0.7,
+                    dutyCycle: 0.3,
                     responsiveness: 5
                 });
 
@@ -26,9 +26,9 @@
                     rodLength: 3,
                     pivotOffset: 0.2,
                     flexMass: 0.1,
-                    flexSpring: 8.7,
-                    flexDamping: 0.13,
-                    flexDrag: 0.08
+                    flexSpring: 15,
+                    flexDamping: 5,
+                    flexDrag: 0.1
                 });
                 this.rod.alignTo(initialAngle);
 
