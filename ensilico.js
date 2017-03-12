@@ -242,8 +242,8 @@ function Wire(properties) {
         deltaPosition: new Pair(),
         deltaVelocity: new Pair(),
         accumulator: new Pair(),
-        lowerForce: new Pair(),
-        upperForce: new Pair()
+        upperForce: new Pair(),
+        lowerForce: new Pair()
     };
 }
 
@@ -275,20 +275,34 @@ Wire.prototype.storeTopEndForce = function(gravity, topEndForce) {
 }
 
 Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEndVelocity, topEndPosition, topEndVelocity) {
-    var massRate = this.mass / (stepsize + Scalar.tiny());
-
     this.position[0].load(bottomEndPosition);
     this.velocity[0].load(bottomEndVelocity);
     this.position[this.numSegments].load(topEndPosition);
     this.velocity[this.numSegments].load(topEndVelocity);
     this.updateAxes();
 
+    var massRate = this.mass / (stepsize + Scalar.tiny());
+    var lumped = this.spring * stepsize + this.damping;
+
     for (var i = 1; i < this.numSegments; i++) {
+        this.reusage.upperForce
+            .loadDelta(this.position[i+1], this.position[i])
+            .multiplyBy(this.spring)
+            .addProduct(this.damping, this.velocity[i+1]);
         this.reusage.lowerForce
             .loadProduct(massRate, this.velocity[i])
             .addProduct(this.mass, gravity)
             .subtractProduct(this.forceScalar(i-1), this.axis[i-1])
             .subtractProduct(this.spring * this.spacing, this.axis[i]);
+        var fluid = this.drag * this.velocity[i].norm();
+        this.reusage.accumulator
+            .loadProduct(massRate + fluid, this.reusage.upperForce)
+            .subtractProduct(lumped - fluid, this.reusage.lowerForce)
+            .divideBy(massRate + lumped);
+        this.velocity[i]
+            .loadProduct(this.reusage.accumulator.dot(this.axis[i]), this.axis[i])
+            .add(this.reusage.lowerForce)
+            .divideBy(massRate + fluid);
     }
 }
 
