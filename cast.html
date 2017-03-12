@@ -32,6 +32,10 @@
                 });
                 this.rod.alignTo(initialAngle);
 
+                var couplerPosition = new Pair();
+                couplerPosition.load(this.bot.position).add(this.rod.tipPostion);
+                this.wire = new Wire({}, couplerPosition);
+
                 // Avoid object allocation in inner loop
                 this.reusage = {
                     targetPosition: new Pair(),
@@ -71,6 +75,8 @@
 
                 r = 0.5 * this.rod.radius();
                 context.quadraticCurveTo(r * x, r * y, this.rod.tipPosition.x, this.rod.tipPosition.y);
+
+                this.wire.visualize(context, elapsedTime);
 
                 context.restore();
             }
