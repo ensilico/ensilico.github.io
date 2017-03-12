@@ -52,6 +52,12 @@ Pair.prototype.load = function(p) {
     return this;
 }
 
+Pair.prototype.loadDelta = function(p1, p2) {
+    this.x = p1.x - p2.x;
+    this.y = p1.y - p2.y;
+    return this;
+}
+
 Pair.prototype.loadPolar = function(r, theta) {
     this.x = r * Math.cos(theta);
     this.y = r * Math.sin(theta);
@@ -184,6 +190,64 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
 
     this.tipVelocity.load(velocity);
     this.tipPosition.addProduct(stepsize, velocity);
+}
+
+// Originates at the origin
+function Wire(properties) {
+    // Default values
+    this.numSegments = 20;
+    this.spacing = 0.1;
+    this.mass = 0.001;
+    this.spring = 10;
+    this.damping = 1;
+    this.drag = 1;
+
+    // Allow caller to override
+    Platform.softCopy(this, properties);
+
+    this.position = [];
+    this.velocity = [];
+    for (var i = 0; i <= this.numSegments; i++) {
+        var p = new Pair();
+        p.load({
+            x: i * this.spacing,
+            y: 0
+        });
+        this.position.push(p);
+
+        this.velocity.push(new Pair());
+    }
+
+    this.axis = [];
+    for (var i = 0; i < this.numSegments; i++) {
+        this.axis.push(new Pair());
+    }
+    this.updateAxes();
+
+    // Avoid object allocation in inner loop
+    this.reusage = {
+        deltaPosition: new Pair(),
+        deltaVelocity: new Pair(),
+        accumulator: new Pair()
+    };
+}
+
+Wire.prototype.updateAxes = function() {
+    for (var i = 0; i < this.numSegments; i++) {
+        this.axis[i]
+            .loadDelta(this.position[i+1], this.position[i])
+            .normalize();
+    }
+}
+
+Wire.prototype.getTopEndForceX = function(gravity) {
+    this.reusage.deltaPosition.loadDelta(this.position[1] - this.position[0]);
+    this.reusage.deltaVelocity.loadDelta(this.position[1] - this.position[0]);
+    this.reusage.accumulator
+        .loadProduct(this.spring, this.reusage.deltaPosition)
+        .addProduct(this.damping, this.reusage.deltaVelocity);
+    var f = this.axis[0].dot(this.reusage.accumulator) + this.spring * this.spacing;
+    return this.mass * gravity.x + f * this.axis[0].x;
 }
 
 function Platform() {}
