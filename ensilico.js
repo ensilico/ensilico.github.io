@@ -261,7 +261,7 @@ Wire.prototype.updateAxes = function() {
 }
 
 // Assume i to be greater than or equal to 0 and less than this.numSegments
-Wire.prototype.forceScalar = function(i) {
+Wire.prototype.scalarForce = function(i) {
     this.reusage.deltaPosition.loadDelta(this.position[i+1] - this.position[i]);
     this.reusage.deltaVelocity.loadDelta(this.velocity[i+1] - this.velocity[i]);
     this.reusage.accumulator
@@ -271,12 +271,12 @@ Wire.prototype.forceScalar = function(i) {
 }
 
 Wire.prototype.storeBottomEndForce = function(gravity, bottomEndForce) {
-    bottomEndForce.loadProduct(this.mass, gravity).addProduct(this.forceScalar(0), this.axis[0]);
+    bottomEndForce.loadProduct(this.mass, gravity).addProduct(this.scalarForce(0), this.axis[0]);
 }
 
 Wire.prototype.storeTopEndForce = function(gravity, topEndForce) {
     var i = this.numSegments - 1;
-    topEndForce.loadProduct(this.mass, gravity).subtractProduct(this.forceScalar(i), this.axis[i]);
+    topEndForce.loadProduct(this.mass, gravity).subtractProduct(this.scalarForce(i), this.axis[i]);
 }
 
 Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEndVelocity, topEndPosition, topEndVelocity) {
@@ -297,7 +297,7 @@ Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEnd
         this.reusage.lowerForce
             .loadProduct(massRate, this.velocity[i])
             .addProduct(this.mass, gravity)
-            .subtractProduct(this.forceScalar(i-1), this.axis[i-1])
+            .subtractProduct(this.scalarForce(i-1), this.axis[i-1])
             .subtractProduct(this.spring * this.spacing, this.axis[i]);
         var fluid = this.drag * this.velocity[i].norm();
         this.reusage.accumulator
@@ -313,7 +313,7 @@ Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEnd
 }
 
 Wire.prototype.visualize = function(context, elapsedTime) {
-    context.moveTo(this.position[0]);
+    context.moveTo(this.position[0].x, this.position[0].y);
     var len = this.numSegments + 1;
     for (var i = 0; i < len; i++) {
         this.reusage.accumulator.loadMidpoint(this.position[i], this.position[Math.min(i+1, len-1)]);
