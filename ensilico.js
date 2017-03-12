@@ -214,11 +214,11 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
 function Wire(properties, bottomEndPosition) {
     // Default values
     this.numSegments = 20;
-    this.spacing = 0.1;
+    this.spacing = 0.2;
     this.mass = 0.001;
     this.spring = 10;
     this.damping = 1;
-    this.drag = 1;
+    this.drag = 0.01;
 
     // Allow caller to override
     Platform.softCopy(this, properties);
