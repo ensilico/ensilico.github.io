@@ -211,8 +211,7 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
     this.tipPosition.addProduct(stepsize, velocity);
 }
 
-// Originates at the origin
-function Wire(properties) {
+function Wire(properties, bottomEndPosition) {
     // Default values
     this.numSegments = 20;
     this.spacing = 0.1;
@@ -228,7 +227,7 @@ function Wire(properties) {
     this.velocity = [];
     for (var i = 0; i <= this.numSegments; i++) {
         var p = new Pair();
-        p.load({
+        p.load(bottomEndPosition).add({
             x: i * this.spacing,
             y: 0
         });
