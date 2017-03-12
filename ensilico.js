@@ -247,14 +247,23 @@ Wire.prototype.updateAxes = function() {
     }
 }
 
-Wire.prototype.getTopEndForceX = function(gravity) {
-    this.reusage.deltaPosition.loadDelta(this.position[1] - this.position[0]);
-    this.reusage.deltaVelocity.loadDelta(this.position[1] - this.position[0]);
+// Assume i to be greater than or equal to 0 and less than this.numSegments
+Wire.prototype.forceScalar = function(i) {
+    this.reusage.deltaPosition.loadDelta(this.position[i+1] - this.position[i]);
+    this.reusage.deltaVelocity.loadDelta(this.velocity[i+1] - this.velocity[i]);
     this.reusage.accumulator
         .loadProduct(this.spring, this.reusage.deltaPosition)
         .addProduct(this.damping, this.reusage.deltaVelocity);
-    var f = this.axis[0].dot(this.reusage.accumulator) + this.spring * this.spacing;
-    return this.mass * gravity.x + f * this.axis[0].x;
+    return this.axis[i].dot(this.reusage.accumulator) - this.spring * this.spacing;
+}
+
+Wire.prototype.storeTopEndForce = function(gravity, topEndForce) {
+    topEndForce.loadProduct(this.mass, gravity).addProduct(this.forceScalar(0), this.axis[0]);
+}
+
+Wire.prototype.storeBottomEndForce = function(gravity, bottomEndForce) {
+    var i = this.numSegments - 1;
+    bottomEndForce.loadProduct(this.mass, gravity).addProduct(-this.forceScalar(i), this.axis[i]);
 }
 
 function Platform() {}
