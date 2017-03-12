@@ -9,14 +9,14 @@
                     y: -9.81
                 });
 
-                var initialAngle = Scalar.toRadians(40);
+                var initialAngle = Scalar.toRadians(10);
                 this.bot = new Bot({
                     position: {
                         x: 3,
                         y: -3
                     },
                     minAngle: initialAngle,
-                    maxAngle: Scalar.toRadians(170),
+                    maxAngle: Scalar.toRadians(150),
                     period: 3,
                     dutyCycle: 0.5,
                     responsiveness: 5
