@@ -242,7 +242,9 @@ function Wire(properties) {
     this.reusage = {
         deltaPosition: new Pair(),
         deltaVelocity: new Pair(),
-        accumulator: new Pair()
+        accumulator: new Pair(),
+        lowerForce: new Pair(),
+        upperForce: new Pair()
     };
 }
 
@@ -264,20 +266,20 @@ Wire.prototype.forceScalar = function(i) {
     return this.axis[i].dot(this.reusage.accumulator) - this.spring * this.spacing;
 }
 
-Wire.prototype.storeTopEndForce = function(gravity, topEndForce) {
-    topEndForce.loadProduct(this.mass, gravity).addProduct(this.forceScalar(0), this.axis[0]);
-}
-
 Wire.prototype.storeBottomEndForce = function(gravity, bottomEndForce) {
-    var i = this.numSegments - 1;
-    bottomEndForce.loadProduct(this.mass, gravity).subtractProduct(this.forceScalar(i), this.axis[i]);
+    bottomEndForce.loadProduct(this.mass, gravity).addProduct(this.forceScalar(0), this.axis[0]);
 }
 
-Wire.prototype.update = function(stepsize, gravity, topEndPosition, topEndVelocity, bottomEndPosition, bottomEndVelocity) {
-    this.position[0].load(topEndPosition);
-    this.velocity[0].load(topEndVelocity);
-    this.position[this.numSegments].load(bottomEndPosition);
-    this.velocity[this.numSegments].load(bottomEndVelocity);
+Wire.prototype.storeTopEndForce = function(gravity, topEndForce) {
+    var i = this.numSegments - 1;
+    topEndForce.loadProduct(this.mass, gravity).subtractProduct(this.forceScalar(i), this.axis[i]);
+}
+
+Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEndVelocity, topEndPosition, topEndVelocity) {
+    this.position[0].load(bottomEndPosition);
+    this.velocity[0].load(bottomEndVelocity);
+    this.position[this.numSegments].load(topEndPosition);
+    this.velocity[this.numSegments].load(topEndVelocity);
     this.updateAxes();
 
     //...
