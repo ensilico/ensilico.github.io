@@ -127,11 +127,18 @@ Pair.prototype.subtract = function(p) {
     return this;
 }
 
+// Subtract scalar product
+Pair.prototype.subtractProduct = function(f, p) {
+    this.x -= f * p.x;
+    this.y -= f * p.y;
+    return this;
+}
+
 // Subtract the projection of this onto p
 // leaving only the perpendicular component of this
 Pair.prototype.subtractProjection = function(p) {
     var f = this.dot(p) / (p.x * p.x + p.y * p.y + Scalar.tiny());
-    return this.addProduct(-f, p);
+    return this.subtractProduct(f, p);
 }
 
 Pair.prototype.normalize = function() {
@@ -263,7 +270,7 @@ Wire.prototype.storeTopEndForce = function(gravity, topEndForce) {
 
 Wire.prototype.storeBottomEndForce = function(gravity, bottomEndForce) {
     var i = this.numSegments - 1;
-    bottomEndForce.loadProduct(this.mass, gravity).addProduct(-this.forceScalar(i), this.axis[i]);
+    bottomEndForce.loadProduct(this.mass, gravity).subtractProduct(this.forceScalar(i), this.axis[i]);
 }
 
 function Platform() {}
