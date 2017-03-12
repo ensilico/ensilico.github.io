@@ -64,6 +64,13 @@ Pair.prototype.loadPolar = function(r, theta) {
     return this;
 }
 
+// Load this with scalar product
+Pair.prototype.loadProduct = function(f, p) {
+    this.x = f * p.x;
+    this.y = f * p.y;
+    return this;
+}
+
 // Load this with the result of (0,0,z) X p
 Pair.prototype.loadCrossProduct = function(z, p) {
     this.x = -z * p.y;
