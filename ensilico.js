@@ -218,7 +218,7 @@ function Wire(properties, bottomEndPosition) {
     this.mass = 0.0001;
     this.spring = 10;
     this.damping = 1;
-    this.drag = 0.01;
+    this.drag = 0.001;
 
     // Allow caller to override
     Platform.softCopy(this, properties);
