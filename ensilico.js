@@ -262,7 +262,7 @@ Wire.prototype.forceScalar = function(i) {
     this.reusage.accumulator
         .loadProduct(this.spring, this.reusage.deltaPosition)
         .addProduct(this.damping, this.reusage.deltaVelocity);
-    return this.axis[i].dot(this.reusage.accumulator) - this.spring * this.spacing;
+    return this.reusage.accumulator.dot(this.axis[i]) - this.spring * this.spacing;
 }
 
 Wire.prototype.storeBottomEndForce = function(gravity, bottomEndForce) {
@@ -303,6 +303,7 @@ Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEnd
             .loadProduct(this.reusage.accumulator.dot(this.axis[i]), this.axis[i])
             .add(this.reusage.lowerForce)
             .divideBy(massRate + fluid);
+        this.position[i].addProduct(stepsize, this.velocity[i]);
     }
 }
 
