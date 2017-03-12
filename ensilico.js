@@ -215,7 +215,7 @@ function Wire(properties, bottomEndPosition) {
     // Default values
     this.numSegments = 20;
     this.spacing = 0.2;
-    this.mass = 0.0005;
+    this.mass = 0.0004;
     this.spring = 10;
     this.damping = 1;
     this.drag = 0.001;
