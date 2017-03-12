@@ -284,7 +284,11 @@ Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEnd
     this.updateAxes();
 
     for (var i = 1; i < this.numSegments; i++) {
-        this.reusage.lowerForce.loadProduct(massRate, this.velocity[i]);
+        this.reusage.lowerForce
+            .loadProduct(massRate, this.velocity[i])
+            .addProduct(this.mass, gravity)
+            .subtractProduct(this.forceScalar(i-1), this.axis[i-1])
+            .subtractProduct(this.spring * this.spacing, this.axis[i]);
     }
 }
 
