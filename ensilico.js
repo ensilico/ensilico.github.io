@@ -354,6 +354,7 @@ function Executive(simulation, context) {
     this.simulation = simulation;
     this.context = context;
     this.simulationLeadTime = 0;
+    this.onBreakFrame = null;
 
     // Default values
     var preferences = {
@@ -375,21 +376,25 @@ function Executive(simulation, context) {
 
 Executive.previousTimestamp = null;
 
-Executive.instances = [];
+Executive.instances = {};
 
 // An attempt to centralize the dependency
 Executive.mainWindow = function() {
     return window;
 }
 
-Executive.start = function(simulation, canvasId) {
+Executive.start = function(simulation, simulationId, canvasId) {
     var canvas = Executive.mainWindow().document.getElementById(canvasId);
     var context = canvas.getContext("2d");
-    Executive.instances.push(new Executive(simulation, context));
+    Executive.instances[simulationId] = new Executive(simulation, context);
     if (!Executive.previousTimestamp) {
         Executive.previousTimestamp = Executive.mainWindow().performance.now();
         Executive.nextFrame();
     }
+}
+
+Executive.breakFrame = function(simulationId, onBreakFrame) {
+    Executive.instances[simulationId].onBreakFrame = onBreakFrame;
 }
 
 Executive.nextFrame = function() {
@@ -399,9 +404,10 @@ Executive.nextFrame = function() {
 Executive.onFrame = function(timestamp) {
     var elapsedTime = (timestamp - Executive.previousTimestamp) / 1000;
     Executive.previousTimestamp = timestamp;
-    var len = Executive.instances.length;
-    for (var i = 0; i < len; i++) {
-        Executive.instances[i].onFrame(elapsedTime);
+    for (var simulationId in Executive.instances) {
+        if (Executive.instances.hasOwnProperty(simulationId)) {
+            Executive.instances[simulationId].onFrame(elapsedTime);
+        }
     }
     Executive.nextFrame();
 }
@@ -420,11 +426,24 @@ Executive.prototype.onFrame = function(elapsedTime) {
     this.simulationLeadTime = Math.max(0, numSteps * stepsize - simulationTime);
 
     // Update the simulation
+    this.updateSimulation(numSteps);
+
+    // Simple visualization
+    this.visualizeSimulation(elapsedTime);
+}
+
+Executive.prototype.updateSimulation = function(numSteps) {
+    if (this.onBreakFrame) {
+        this.onBreakFrame(this.simulation);
+        debugger;
+    }
+
     for (var i = 0; i < numSteps; i++) {
         this.simulation.update(this.controls);
     }
+}
 
-    // Simple visualization
+Executive.prototype.visualizeSimulation = function(elapsedTime) {
     var context = this.context;
     var w = context.canvas.width;
     var h = context.canvas.height;
