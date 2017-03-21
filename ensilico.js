@@ -383,7 +383,11 @@ Executive.mainWindow = function() {
     return window;
 }
 
-Executive.start = function(simulation, simulationId, canvasId) {
+Executive.breakFrame = function(simulationId, onBreakFrame) {
+    Executive.instances[simulationId].onBreakFrame = onBreakFrame;
+}
+
+Executive.start = function(simulationId, simulation, canvasId) {
     var canvas = Executive.mainWindow().document.getElementById(canvasId);
     var context = canvas.getContext("2d");
     Executive.instances[simulationId] = new Executive(simulation, context);
@@ -391,10 +395,6 @@ Executive.start = function(simulation, simulationId, canvasId) {
         Executive.previousTimestamp = Executive.mainWindow().performance.now();
         Executive.nextFrame();
     }
-}
-
-Executive.breakFrame = function(simulationId, onBreakFrame) {
-    Executive.instances[simulationId].onBreakFrame = onBreakFrame;
 }
 
 Executive.nextFrame = function() {
