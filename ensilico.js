@@ -435,6 +435,7 @@ Executive.prototype.onFrame = function(elapsedTime) {
 Executive.prototype.updateSimulation = function(numSteps) {
     if (this.onBreakFrame) {
         this.onBreakFrame(this.simulation);
+        this.onBreakFrame = null;
         debugger;
     }
 
