@@ -397,6 +397,13 @@ Executive.start = function(simulationId, simulation, canvasId) {
     }
 }
 
+Executive.startFromJson = function(simulationId, simulation, canvasId, url) {
+    Platform.getJson(url, function(json) {
+        Platform.softCopy(simulation, json);
+        Executive.start(simulationId, simulation, canvasId);
+    });
+}
+
 Executive.nextFrame = function() {
     Executive.mainWindow().requestAnimationFrame(Executive.onFrame);
 }
