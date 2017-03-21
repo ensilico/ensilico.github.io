@@ -350,6 +350,18 @@ Platform.softCopy = function(dst, src) {
     return dst;
 }
 
+Platform.getJson = function(url, success) {
+    var xhr = XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            var json = JSON.parse(xhr.responseText);
+            success(json);
+        }
+    };
+    xhr.send(null);
+}
+
 function Executive(simulation, context) {
     this.simulation = simulation;
     this.context = context;
