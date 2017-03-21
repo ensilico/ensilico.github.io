@@ -53,10 +53,10 @@
             var theSim; // for debug
         </script>
     </head>
-    <body onload="Executive.start(new Clock(), 'clock', 'visual')">
+    <body onload="Executive.start('clock', new Clock(), 'visual')">
         <canvas id="visual" width="400" height="400">
             Opps.
         </canvas>
-        <button onclick="Executive.breakFrame('clock', function(sim){theSim=sim;})">Debug</button>
+        <button onclick="Executive.breakFrame('clock', function(sim){theSim=sim;})">Break</button>
     </body>
 </html>
