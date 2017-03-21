@@ -1,0 +1,10 @@
+{
+  "time": 0,
+  "radii": {
+    "hour": 0.6,
+    "minute": 0.75,
+    "second": 0.9,
+    "bezel": 0.95,
+    "outer": 1
+  }
+}
