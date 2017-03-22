@@ -53,8 +53,8 @@
             var theSim; // for debug
         </script>
     </head>
-    <body onload="Executive.startFromJson('clock', new Clock(), 'visual', 'clock.json')">
-        <canvas id="visual" width="400" height="400">
+    <body onload="Executive.startFromJson('clock', new Clock(), 'clock.json')">
+        <canvas id="clock" width="400" height="400">
             Opps.
         </canvas>
         <button onclick="Executive.breakFrame('clock', function(sim){theSim=sim;})">Break</button>
