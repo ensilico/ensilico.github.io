@@ -395,24 +395,28 @@ Executive.mainWindow = function() {
     return window;
 }
 
-Executive.breakFrame = function(simulationId, onBreakFrame) {
-    Executive.instances[simulationId].onBreakFrame = onBreakFrame;
+Executive.breakFrame = function(id, onBreakFrame) {
+    Executive.instances[id].onBreakFrame = onBreakFrame;
 }
 
-Executive.start = function(simulationId, simulation, canvasId) {
-    var canvas = Executive.mainWindow().document.getElementById(canvasId);
+// Simulation to canvas is assumed to be 1:1
+// Starting an id already started is neither supported nor defined
+Executive.start = function(id, simulation) {
+    var canvas = Executive.mainWindow().document.getElementById(id);
     var context = canvas.getContext("2d");
-    Executive.instances[simulationId] = new Executive(simulation, context);
+    Executive.instances[id] = new Executive(simulation, context);
     if (!Executive.previousTimestamp) {
         Executive.previousTimestamp = Executive.mainWindow().performance.now();
         Executive.nextFrame();
     }
 }
 
-Executive.startFromJson = function(simulationId, simulation, canvasId, url) {
+// Simulation to canvas is assumed to be 1:1
+// Starting an id already started is neither supported nor defined
+Executive.startFromJson = function(id, simulation, url) {
     Platform.getJson(url, function(json) {
         Platform.softCopy(simulation, json);
-        Executive.start(simulationId, simulation, canvasId);
+        Executive.start(id, simulation);
     });
 }
 
@@ -423,9 +427,9 @@ Executive.nextFrame = function() {
 Executive.onFrame = function(timestamp) {
     var elapsedTime = (timestamp - Executive.previousTimestamp) / 1000;
     Executive.previousTimestamp = timestamp;
-    for (var simulationId in Executive.instances) {
-        if (Executive.instances.hasOwnProperty(simulationId)) {
-            Executive.instances[simulationId].onFrame(elapsedTime);
+    for (var id in Executive.instances) {
+        if (Executive.instances.hasOwnProperty(id)) {
+            Executive.instances[id].onFrame(elapsedTime);
         }
     }
     Executive.nextFrame();
