@@ -351,7 +351,7 @@ Platform.softCopy = function(dst, src) {
 }
 
 Platform.getJson = function(url, success) {
-    var xhr = XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4 && xhr.status == 200) {
@@ -359,7 +359,7 @@ Platform.getJson = function(url, success) {
             success(json);
         }
     };
-    xhr.send(null);
+    xhr.send();
 }
 
 function Executive(simulation, context) {
