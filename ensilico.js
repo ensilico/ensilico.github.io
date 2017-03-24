@@ -495,6 +495,7 @@ Executive.prototype.visualizeSimulation = function(elapsedTime) {
 
 Executive.prototype.registerListeners = function(canvas) {
     var self = this;
+
     canvas.addEventListener("mousedown", function(event) {
         self.isCaptured = true;
         self.pointerCapture.x = event.clientX;
@@ -506,6 +507,22 @@ Executive.prototype.registerListeners = function(canvas) {
         self.pointerPosition.y = event.clientY;
     }, false);
     canvas.addEventListener("mouseup", function() {
+        self.isCaptured = false;
+    }, false);
+
+    canvas.addEventListener("touchstart", function(event) {
+        var touch = event.touches[0];
+        self.isCaptured = true;
+        self.pointerCapture.x = touch.clientX;
+        self.pointerCapture.y = touch.clientY;
+        self.pointerPosition.load(self.pointerCapture);
+    }, false);
+    canvas.addEventListener("touchmove", function(event) {
+        var touch = event.touches[0];
+        self.pointerPosition.x = touch.clientX;
+        self.pointerPosition.y = touch.clientY;
+    }, false);
+    canvas.addEventListener("touchend", function() {
         self.isCaptured = false;
     }, false);
 }
