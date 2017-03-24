@@ -124,7 +124,7 @@
                 this.captureAngle = Scalar.lerp(this.angle, this.captureAngle, pointerContact);
                 var target = pointerContact * pointerDisplacement * this.gain + this.captureAngle;
                 this.rate = Scalar.lagRate(this.angle, target, this.responsiveness, stepsize);
-                this.angle = stepsize * this.rate;
+                this.angle += stepsize * this.rate;
             }
        </script>
     </head>
