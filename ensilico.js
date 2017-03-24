@@ -381,9 +381,16 @@ function Executive(simulation, context) {
     this.visualScale = preferences.visualScale;
     this.controls = {
         stepsize: preferences.stepsize,
-        holdSteady: false
+        pointer: {
+            contact: 0,
+            displacement: new Pair()
+        }
     };
     this.maxStepsPerFrame = preferences.maxStepsPerFrame;
+
+    this.isCaptured = false;
+    this.pointerCapture = new Pair();
+    this.pointerPosition = new Pair();
 }
 
 Executive.previousTimestamp = null;
@@ -404,7 +411,9 @@ Executive.breakFrame = function(id, onBreakFrame) {
 Executive.start = function(id, simulation) {
     var canvas = Executive.mainWindow().document.getElementById(id);
     var context = canvas.getContext("2d");
-    Executive.instances[id] = new Executive(simulation, context);
+    var instance = new Executive(simulation, context);
+    instance.registerListeners(canvas);
+    Executive.instances[id] = instance;
     if (!Executive.previousTimestamp) {
         Executive.previousTimestamp = Executive.mainWindow().performance.now();
         Executive.nextFrame();
@@ -462,6 +471,9 @@ Executive.prototype.updateSimulation = function(numSteps) {
         debugger;
     }
 
+    this.controls.pointer.contact = this.isCaptured ? 1 : 0;
+    this.controls.pointer.displacement.loadDelta(this.pointerPosition, this.pointerCapture);
+
     for (var i = 0; i < numSteps; i++) {
         this.simulation.update(this.controls);
     }
@@ -479,4 +491,21 @@ Executive.prototype.visualizeSimulation = function(elapsedTime) {
     this.simulation.visualize(context, elapsedTime);
     context.restore();
     context.stroke();
+}
+
+Executive.prototype.registerListeners = function(canvas) {
+    var self = this;
+    canvas.addEventListener("mousedown", function(event) {
+        self.isCaptured = true;
+        self.pointerCapture.x = event.clientX;
+        self.pointerCapture.y = event.clientY;
+        self.pointerPosition.load(self.pointerCapture);
+    }, false);
+    canvas.addEventListener("mousemove", function(event) {
+        self.pointerPosition.x = event.clientX;
+        self.pointerPosition.y = event.clientY;
+    }, false);
+    canvas.addEventListener("mouseup", function() {
+        self.isCaptured = false;
+    }, false);
 }
