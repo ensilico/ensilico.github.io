@@ -10,12 +10,11 @@
     },
     "minAngle": 0.5235987755982988,
     "maxAngle": 2.6179938779914944,
-    "period": 3,
-    "dutyCycle": 0.5,
+    "gain": 0.01,
     "responsiveness": 10,
     "angle": 0.5235987755982988,
     "rate": 0,
-    "time": 0
+    "captureAngle": 0.5235987755982988
   },
   "rod": {
     "rodLength": 3,
