@@ -497,32 +497,41 @@ Executive.prototype.registerListeners = function(canvas) {
     var self = this;
 
     canvas.addEventListener("mousedown", function(event) {
-        self.isCaptured = true;
-        self.pointerCapture.x = event.clientX;
-        self.pointerCapture.y = event.clientY;
-        self.pointerPosition.load(self.pointerCapture);
+        self.onPointerDown(event.clientX, event.clientY);
     }, false);
     canvas.addEventListener("mousemove", function(event) {
-        self.pointerPosition.x = event.clientX;
-        self.pointerPosition.y = event.clientY;
+        self.onPointerMove(event.clientX, event.clientY);
     }, false);
     canvas.addEventListener("mouseup", function() {
-        self.isCaptured = false;
+        self.onPointerUp();
     }, false);
 
     canvas.addEventListener("touchstart", function(event) {
         var touch = event.touches[0];
-        self.isCaptured = true;
-        self.pointerCapture.x = touch.clientX;
-        self.pointerCapture.y = touch.clientY;
-        self.pointerPosition.load(self.pointerCapture);
+        self.onPointerDown(touch.clientX, touch.clientY);
     }, false);
     canvas.addEventListener("touchmove", function(event) {
         var touch = event.touches[0];
-        self.pointerPosition.x = touch.clientX;
-        self.pointerPosition.y = touch.clientY;
+        self.onPointerMove(touch.clientX, touch.clientY);
     }, false);
     canvas.addEventListener("touchend", function() {
-        self.isCaptured = false;
+        self.onPointerUp();
     }, false);
+}
+
+Executive.prototype.onPointerDown = function(x, y) {
+    this.isCaptured = true;
+    this.pointerCapture.x = x;
+    this.pointerCapture.y = y;
+    this.pointerPosition.x = x;
+    this.pointerPosition.y = y;
+}
+
+Executive.prototype.onPointerMove = function(x, y) {
+    this.pointerPosition.x = x;
+    this.pointerPosition.y = y;
+}
+
+Executive.prototype.onPointerUp = function() {
+    this.isCaptured = false;
 }
