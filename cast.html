@@ -121,11 +121,10 @@
             }
 
             Bot.prototype.update = function(stepsize, pointerContact, pointerDisplacement) {
-                var previousAngle = this.angle;
                 this.captureAngle = Scalar.lerp(this.angle, this.captureAngle, pointerContact);
-                var targetAngle = pointerContact * pointerDisplacement * this.gain + this.captureAngle;
-                this.angle = Scalar.lag(this.angle, targetAngle, this.responsiveness, stepsize);
-                this.rate = (this.angle - previousAngle) / (stepsize + Scalar.tiny());
+                var target = pointerContact * pointerDisplacement * this.gain + this.captureAngle;
+                this.rate = Scalar.lagRate(this.angle, target, this.responsiveness, stepsize);
+                this.angle = stepsize * this.rate;
             }
        </script>
     </head>
