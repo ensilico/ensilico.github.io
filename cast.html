@@ -42,8 +42,8 @@
                 this.reusage = {
                     targetPosition: new Pair(),
                     targetVelocity: new Pair(),
-                    bottomEndForce: new Pair(),
-                    topEndForce: new Pair()
+                    headForce: new Pair(),
+                    tailForce: new Pair()
                 };
             }
 
@@ -64,9 +64,9 @@
                     this.rod.tipVelocity,
                     this.lurePosition,
                     this.lureVelocity);
-                this.filament.storeBottomEndForce(this.gravity, this.reusage.bottomEndForce);
-                this.filament.storeTopEndForce(this.gravity, this.reusage.topEndForce);
-                this.reusage.topEndForce
+                this.filament.storeHeadForce(this.gravity, this.reusage.headForce);
+                this.filament.storeTailForce(this.gravity, this.reusage.tailForce);
+                this.reusage.tailForce
                     .addProduct(this.lureMass, this.gravity)
                     .subtractProduct(this.lureDrag * this.lureVelocity.norm(), this.lureVelocity);
                 this.lureVelocity.addProduct(stepsize / this.lureMass, this.reusage.topEndForce);
@@ -80,7 +80,7 @@
                 var targetVelocity = this.reusage.targetVelocity;
                 targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
 
-                this.rod.update(stepsize, this.gravity, this.reusage.bottomEndForce, targetPosition, targetVelocity);
+                this.rod.update(stepsize, this.gravity, this.reusage.headForce, targetPosition, targetVelocity);
             }
 
             Cast.prototype.visualize = function(context, elapsedTime) {
