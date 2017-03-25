@@ -161,11 +161,15 @@ Pair.prototype.integrate = function(rate, stepsize) {
     return this;
 }
 
-function Particle() {
+function Particle(properties) {
+    // Default values
     this.mass = 0.001;
     this.drag = 0.003;
     this.position = new Pair();
     this.velocity = new Pair();
+
+    // Allow caller to override
+    Platform.softCopy(this, properties);
 
     // Avoid object allocation in inner loop
     this.reusage = {
