@@ -165,13 +165,12 @@ function Particle() {
 
 Particle.prototype.update = function(stepsize, gravity, externalForce) {
     var massRate = this.mass / (stepsize + Scalar.tiny());
-
     var force = this.reusage.force;
+
     force
         .load(externalForce)
         .addProduct(this.mass, gravity)
         .addProduct(massRate, this.velocity);
-
     var denominator = massRate + this.drag * this.velocity.norm();
     this.velocity.load(force).divideBy(denominator);
     this.position.addProduct(stepsize, this.velocity);
@@ -211,8 +210,9 @@ Rod.prototype.alignTo = function(angle) {
 
 Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition, targetVelocity) {
     var massRate = this.mass / (stepsize + Scalar.tiny());
-
     var force = this.reusage.force;
+    var velocity = this.reusage.velocity;
+
     force
         .load(externalForce)
         .addProduct(this.mass, gravity)
@@ -226,7 +226,6 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
         stepsize * this.spring +
         this.damping +
         this.drag * this.tipVelocity.norm();
-    var velocity = this.reusage.velocity;
     velocity.load(force).divideBy(denominator);
 
     var norm = this.tipPosition.norm();
@@ -291,12 +290,16 @@ Filament.prototype.updateAxes = function() {
 
 // Assume i to be greater than or equal to 0 and less than Filament.numSegments()
 Filament.prototype.scalarForce = function(i) {
-    this.reusage.deltaPosition.loadDelta(this.position[i+1], this.position[i]);
-    this.reusage.deltaVelocity.loadDelta(this.velocity[i+1], this.velocity[i]);
-    this.reusage.accumulator
-        .loadProduct(this.spring, this.reusage.deltaPosition)
-        .addProduct(this.damping, this.reusage.deltaVelocity);
-    return this.reusage.accumulator.dot(this.axis[i]) - this.spring * this.spacing;
+    var deltaPosition = this.reusage.deltaPosition;
+    var deltaVelocity = this.reusage.deltaVelocity;
+    var accumulator = this.reusage.accumulator;
+
+    deltaPosition.loadDelta(this.position[i+1], this.position[i]);
+    deltaVelocity.loadDelta(this.velocity[i+1], this.velocity[i]);
+    accumulator
+        .loadProduct(this.spring, deltaPosition)
+        .addProduct(this.damping, deltaVelocity);
+    return accumulator.dot(this.axis[i]) - this.spring * this.spacing;
 }
 
 Filament.prototype.storeHeadForce = function(gravity, headForce) {
@@ -309,6 +312,10 @@ Filament.prototype.storeTailForce = function(gravity, tailForce) {
 }
 
 Filament.prototype.update = function(stepsize, gravity, headPosition, headVelocity, tailPosition, tailVelocity) {
+    var upperForce = this.reusage.upperForce;
+    var lowerForce = this.reusage.lowerForce;
+    var accumulator = this.reusage.accumulator;
+
     this.position[0].load(headPosition);
     this.velocity[0].load(headVelocity);
     this.position[Filament.numSegments()].load(tailPosition);
@@ -319,38 +326,40 @@ Filament.prototype.update = function(stepsize, gravity, headPosition, headVeloci
     var lumped = this.spring * stepsize + this.damping;
 
     for (var i = 1; i < Filament.numSegments(); i++) {
-        this.reusage.upperForce
+        upperForce
             .loadDelta(this.position[i+1], this.position[i])
             .multiplyBy(this.spring)
             .addProduct(this.damping, this.velocity[i+1]);
-        this.reusage.lowerForce
+        lowerForce
             .loadProduct(massRate, this.velocity[i])
             .addProduct(this.mass, gravity)
             .subtractProduct(this.scalarForce(i-1), this.axis[i-1])
             .subtractProduct(this.spring * this.spacing, this.axis[i]);
         var fluid = this.drag * this.velocity[i].norm();
-        this.reusage.accumulator
-            .loadProduct(massRate + fluid, this.reusage.upperForce)
-            .subtractProduct(lumped - fluid, this.reusage.lowerForce)
+        accumulator
+            .loadProduct(massRate + fluid, upperForce)
+            .subtractProduct(lumped - fluid, lowerForce)
             .divideBy(massRate + lumped);
         this.velocity[i]
-            .loadProduct(this.reusage.accumulator.dot(this.axis[i]), this.axis[i])
-            .add(this.reusage.lowerForce)
+            .loadProduct(accumulator.dot(this.axis[i]), this.axis[i])
+            .add(lowerForce)
             .divideBy(massRate + fluid);
         this.position[i].addProduct(stepsize, this.velocity[i]);
     }
 }
 
 Filament.prototype.visualize = function(context, elapsedTime) {
+    var accumulator = this.reusage.accumulator;
+
     context.moveTo(this.position[0].x, this.position[0].y);
     var len = Filament.numSegments() + 1;
     for (var i = 0; i < len; i++) {
-        this.reusage.accumulator.loadMidpoint(this.position[i], this.position[Math.min(i+1, len-1)]);
+        accumulator.loadMidpoint(this.position[i], this.position[Math.min(i+1, len-1)]);
         context.quadraticCurveTo(
             this.position[i].x,
             this.position[i].y,
-            this.reusage.accumulator.x,
-            this.reusage.accumulator.y);
+            accumulator.x,
+            accumulator.y);
     }
 }
 
