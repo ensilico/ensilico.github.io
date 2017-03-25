@@ -154,12 +154,12 @@ Pair.prototype.normalize = function() {
 // Pivots about the origin
 function Rod(properties) {
     // Default values
-    this.rodLength = 3;
+    this.overallLength = 3;
     this.pivotOffset = 0.2;
-    this.flexMass = 0.1;
-    this.flexSpring = 10;
-    this.flexDamping = 1;
-    this.flexDrag = 1;
+    this.mass = 0.1;
+    this.spring = 10;
+    this.damping = 1;
+    this.drag = 1;
     this.tipPosition = new Pair();
     this.alignTo(0);
     this.tipVelocity = new Pair();
@@ -175,7 +175,7 @@ function Rod(properties) {
 }
 
 Rod.prototype.radius = function() {
-    return this.rodLength - this.pivotOffset;
+    return this.overallLength - this.pivotOffset;
 }
 
 Rod.prototype.alignTo = function(angle) {
@@ -184,22 +184,22 @@ Rod.prototype.alignTo = function(angle) {
 }
 
 Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition, targetVelocity) {
-    var massRate = this.flexMass / (stepsize + Scalar.tiny());
+    var massRate = this.mass / (stepsize + Scalar.tiny());
 
     var force = this.reusage.force;
     force
         .load(externalForce)
-        .addProduct(this.flexMass, gravity)
+        .addProduct(this.mass, gravity)
         .addProduct(massRate, this.tipVelocity)
-        .addProduct(this.flexSpring, targetPosition)
-        .addProduct(this.flexDamping, targetVelocity);
+        .addProduct(this.spring, targetPosition)
+        .addProduct(this.damping, targetVelocity);
     force.subtractProjection(this.tipPosition);
 
     var denominator =
         massRate +
-        stepsize * this.flexSpring +
-        this.flexDamping +
-        this.flexDrag * this.tipVelocity.norm();
+        stepsize * this.spring +
+        this.damping +
+        this.drag * this.tipVelocity.norm();
     var velocity = this.reusage.velocity;
     velocity.load(force).divideBy(denominator);
 
