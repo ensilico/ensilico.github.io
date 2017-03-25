@@ -151,6 +151,27 @@ Pair.prototype.normalize = function() {
     return this.divideBy(this.norm() + Scalar.tiny());
 }
 
+function Particle() {
+    this.mass = 0.001;
+    this.drag = 0.003;
+    this.position = new Pair();
+    this.velocity = new Pair();
+
+    // Avoid object allocation in inner loop
+    this.reusage = {
+        force: new Pair()
+    };
+}
+
+Particle.prototype.update = function(stepsize, gravity, externalForce) {
+    this.reusage.force
+        .load(externalForce)
+        .addProduct(this.mass, gravity)
+        .subtractProduct(this.drag * this.velocity.norm(), this.velocity);
+    this.velocity.addProduct(stepsize / this.mass, this.reusage.force);
+    this.position.addProduct(stepsize, this.velocity);
+}
+
 // Pivots about the origin
 function Rod(properties) {
     // Default values
