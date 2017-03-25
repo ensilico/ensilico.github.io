@@ -211,7 +211,7 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
     this.tipPosition.addProduct(stepsize, velocity);
 }
 
-function Wire(properties, bottomEndPosition) {
+function Filament(properties, bottomEndPosition) {
     // Default values
     this.spacing = 0.2;
     this.mass = 0.0004;
@@ -224,7 +224,7 @@ function Wire(properties, bottomEndPosition) {
 
     this.position = [];
     this.velocity = [];
-    for (var i = 0; i <= Wire.numSegments(); i++) {
+    for (var i = 0; i <= Filament.numSegments(); i++) {
         var p = new Pair();
         p.load(bottomEndPosition).add({
             x: i * this.spacing,
@@ -236,7 +236,7 @@ function Wire(properties, bottomEndPosition) {
     }
 
     this.axis = [];
-    for (var i = 0; i < Wire.numSegments(); i++) {
+    for (var i = 0; i < Filament.numSegments(); i++) {
         this.axis.push(new Pair());
     }
     this.updateAxes();
@@ -251,20 +251,20 @@ function Wire(properties, bottomEndPosition) {
     };
 }
 
-Wire.numSegments = function() {
+Filament.numSegments = function() {
     return 20;
 }
 
-Wire.prototype.updateAxes = function() {
-    for (var i = 0; i < Wire.numSegments(); i++) {
+Filament.prototype.updateAxes = function() {
+    for (var i = 0; i < Filament.numSegments(); i++) {
         this.axis[i]
             .loadDelta(this.position[i+1], this.position[i])
             .normalize();
     }
 }
 
-// Assume i to be greater than or equal to 0 and less than Wire.numSegments()
-Wire.prototype.scalarForce = function(i) {
+// Assume i to be greater than or equal to 0 and less than Filament.numSegments()
+Filament.prototype.scalarForce = function(i) {
     this.reusage.deltaPosition.loadDelta(this.position[i+1], this.position[i]);
     this.reusage.deltaVelocity.loadDelta(this.velocity[i+1], this.velocity[i]);
     this.reusage.accumulator
@@ -273,26 +273,26 @@ Wire.prototype.scalarForce = function(i) {
     return this.reusage.accumulator.dot(this.axis[i]) - this.spring * this.spacing;
 }
 
-Wire.prototype.storeBottomEndForce = function(gravity, bottomEndForce) {
+Filament.prototype.storeBottomEndForce = function(gravity, bottomEndForce) {
     bottomEndForce.loadProduct(this.mass, gravity).addProduct(this.scalarForce(0), this.axis[0]);
 }
 
-Wire.prototype.storeTopEndForce = function(gravity, topEndForce) {
-    var i = Wire.numSegments() - 1;
+Filament.prototype.storeTopEndForce = function(gravity, topEndForce) {
+    var i = Filament.numSegments() - 1;
     topEndForce.loadProduct(this.mass, gravity).subtractProduct(this.scalarForce(i), this.axis[i]);
 }
 
-Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEndVelocity, topEndPosition, topEndVelocity) {
+Filament.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEndVelocity, topEndPosition, topEndVelocity) {
     this.position[0].load(bottomEndPosition);
     this.velocity[0].load(bottomEndVelocity);
-    this.position[Wire.numSegments()].load(topEndPosition);
-    this.velocity[Wire.numSegments()].load(topEndVelocity);
+    this.position[Filament.numSegments()].load(topEndPosition);
+    this.velocity[Filament.numSegments()].load(topEndVelocity);
     this.updateAxes();
 
     var massRate = this.mass / (stepsize + Scalar.tiny());
     var lumped = this.spring * stepsize + this.damping;
 
-    for (var i = 1; i < Wire.numSegments(); i++) {
+    for (var i = 1; i < Filament.numSegments(); i++) {
         this.reusage.upperForce
             .loadDelta(this.position[i+1], this.position[i])
             .multiplyBy(this.spring)
@@ -315,9 +315,9 @@ Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEnd
     }
 }
 
-Wire.prototype.visualize = function(context, elapsedTime) {
+Filament.prototype.visualize = function(context, elapsedTime) {
     context.moveTo(this.position[0].x, this.position[0].y);
-    var len = Wire.numSegments() + 1;
+    var len = Filament.numSegments() + 1;
     for (var i = 0; i < len; i++) {
         this.reusage.accumulator.loadMidpoint(this.position[i], this.position[Math.min(i+1, len-1)]);
         context.quadraticCurveTo(
