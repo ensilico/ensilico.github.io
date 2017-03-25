@@ -65,6 +65,7 @@
                     this.rod.tipVelocity,
                     this.lure.position,
                     this.lure.velocity);
+
                 this.filament.storeHeadForce(this.gravity, headForce);
                 this.filament.storeTailForce(this.gravity, tailForce);
                 this.lure.update(stepsize, this.gravity, tailForce);
@@ -72,9 +73,7 @@
                 this.bot.update(stepsize, controls.pointer.contact, controls.pointer.displacement.y);
 
                 targetPosition.loadPolar(this.rod.radius(), this.bot.angle);
-
                 targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
-
                 this.rod.update(stepsize, this.gravity, headForce, targetPosition, targetVelocity);
             }
 
@@ -119,7 +118,7 @@
                 this.captureAngle = Scalar.lerp(this.angle, this.captureAngle, pointerContact);
                 var target = pointerContact * pointerDisplacement * this.gain + this.captureAngle;
                 this.rate = Scalar.lagRate(this.angle, target, this.responsiveness, stepsize);
-                this.angle += stepsize * this.rate;
+                this.angle = Scalar.integrate(this.angle, this.rate, stepsize);
             }
        </script>
     </head>
