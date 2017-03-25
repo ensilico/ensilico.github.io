@@ -263,7 +263,7 @@ Wire.prototype.updateAxes = function() {
     }
 }
 
-// Assume i to be greater than or equal to 0 and less than this.numSegments
+// Assume i to be greater than or equal to 0 and less than Wire.numSegments()
 Wire.prototype.scalarForce = function(i) {
     this.reusage.deltaPosition.loadDelta(this.position[i+1], this.position[i]);
     this.reusage.deltaVelocity.loadDelta(this.velocity[i+1], this.velocity[i]);
@@ -278,7 +278,7 @@ Wire.prototype.storeBottomEndForce = function(gravity, bottomEndForce) {
 }
 
 Wire.prototype.storeTopEndForce = function(gravity, topEndForce) {
-    var i = this.numSegments - 1;
+    var i = Wire.numSegments() - 1;
     topEndForce.loadProduct(this.mass, gravity).subtractProduct(this.scalarForce(i), this.axis[i]);
 }
 
