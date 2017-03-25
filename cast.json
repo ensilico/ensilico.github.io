@@ -344,19 +344,19 @@
     }
   },
   "reusage": {
-    "targetPosition": {
-      "x": 0,
-      "y": 0
-    },
-    "targetVelocity": {
-      "x": 0,
-      "y": 0
-    },
     "headForce": {
       "x": 0,
       "y": 0
     },
     "tailForce": {
+      "x": 0,
+      "y": 0
+    },
+    "targetPosition": {
+      "x": 0,
+      "y": 0
+    },
+    "targetVelocity": {
       "x": 0,
       "y": 0
     }
