@@ -17,12 +17,12 @@
     "captureAngle": 0.5235987755982988
   },
   "rod": {
-    "rodLength": 3,
+    "overallLength": 3,
     "pivotOffset": 0.2,
-    "flexMass": 0.1,
-    "flexSpring": 18,
-    "flexDamping": 0.3,
-    "flexDrag": 0.1,
+    "mass": 0.1,
+    "spring": 18,
+    "damping": 0.3,
+    "drag": 0.1,
     "tipPosition": {
       "x": 2.4248711305964283,
       "y": 1.3999999999999997
