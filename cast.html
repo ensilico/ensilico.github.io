@@ -3,12 +3,6 @@
         <script src="ensilico.js"></script>
         <script>
             function Cast() {
-                this.gravity = new Pair();
-                this.gravity.load({
-                    x: 0,
-                    y: -9.81
-                });
-
                 var initialAngle = Scalar.toRadians(30);
                 this.bot = new Bot({
                     position: {
@@ -44,6 +38,11 @@
                 };
             }
 
+            Cast.gravity = new Pair().load({
+                x: 0,
+                y: -9.81
+            });
+
             Cast.prototype.preferences = function() {
                 return {
                     visualScale: 32,
@@ -60,21 +59,21 @@
 
                 this.filament.update(
                     stepsize,
-                    this.gravity,
+                    Cast.gravity,
                     this.rod.tipPosition,
                     this.rod.tipVelocity,
                     this.lure.position,
                     this.lure.velocity);
 
-                this.filament.storeHeadForce(this.gravity, headForce);
-                this.filament.storeTailForce(this.gravity, tailForce);
-                this.lure.update(stepsize, this.gravity, tailForce);
+                this.filament.storeHeadForce(Cast.gravity, headForce);
+                this.filament.storeTailForce(Cast.gravity, tailForce);
+                this.lure.update(stepsize, Cast.gravity, tailForce);
 
                 this.bot.update(stepsize, controls.pointer.contact, controls.pointer.displacement.y);
 
                 targetPosition.loadPolar(this.rod.radius(), this.bot.angle);
                 targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
-                this.rod.update(stepsize, this.gravity, headForce, targetPosition, targetVelocity);
+                this.rod.update(stepsize, Cast.gravity, headForce, targetPosition, targetVelocity);
             }
 
             Cast.prototype.visualize = function(context, elapsedTime) {
