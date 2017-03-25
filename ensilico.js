@@ -213,7 +213,6 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
 
 function Wire(properties, bottomEndPosition) {
     // Default values
-    this.numSegments = 20;
     this.spacing = 0.2;
     this.mass = 0.0004;
     this.spring = 10;
@@ -225,7 +224,7 @@ function Wire(properties, bottomEndPosition) {
 
     this.position = [];
     this.velocity = [];
-    for (var i = 0; i <= this.numSegments; i++) {
+    for (var i = 0; i <= Wire.numSegments(); i++) {
         var p = new Pair();
         p.load(bottomEndPosition).add({
             x: i * this.spacing,
@@ -237,7 +236,7 @@ function Wire(properties, bottomEndPosition) {
     }
 
     this.axis = [];
-    for (var i = 0; i < this.numSegments; i++) {
+    for (var i = 0; i < Wire.numSegments(); i++) {
         this.axis.push(new Pair());
     }
     this.updateAxes();
@@ -252,8 +251,12 @@ function Wire(properties, bottomEndPosition) {
     };
 }
 
+Wire.numSegments = function() {
+    return 20;
+}
+
 Wire.prototype.updateAxes = function() {
-    for (var i = 0; i < this.numSegments; i++) {
+    for (var i = 0; i < Wire.numSegments(); i++) {
         this.axis[i]
             .loadDelta(this.position[i+1], this.position[i])
             .normalize();
@@ -282,14 +285,14 @@ Wire.prototype.storeTopEndForce = function(gravity, topEndForce) {
 Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEndVelocity, topEndPosition, topEndVelocity) {
     this.position[0].load(bottomEndPosition);
     this.velocity[0].load(bottomEndVelocity);
-    this.position[this.numSegments].load(topEndPosition);
-    this.velocity[this.numSegments].load(topEndVelocity);
+    this.position[Wire.numSegments()].load(topEndPosition);
+    this.velocity[Wire.numSegments()].load(topEndVelocity);
     this.updateAxes();
 
     var massRate = this.mass / (stepsize + Scalar.tiny());
     var lumped = this.spring * stepsize + this.damping;
 
-    for (var i = 1; i < this.numSegments; i++) {
+    for (var i = 1; i < Wire.numSegments(); i++) {
         this.reusage.upperForce
             .loadDelta(this.position[i+1], this.position[i])
             .multiplyBy(this.spring)
@@ -314,7 +317,7 @@ Wire.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEnd
 
 Wire.prototype.visualize = function(context, elapsedTime) {
     context.moveTo(this.position[0].x, this.position[0].y);
-    var len = this.numSegments + 1;
+    var len = Wire.numSegments() + 1;
     for (var i = 0; i < len; i++) {
         this.reusage.accumulator.loadMidpoint(this.position[i], this.position[Math.min(i+1, len-1)]);
         context.quadraticCurveTo(
