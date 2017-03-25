@@ -325,15 +325,23 @@
       }
     }
   },
-  "lureMass": 0.001,
-  "lureDrag": 0.003,
-  "lurePosition": {
-    "x": 6.424871130596428,
-    "y": 1.3999999999999997
-  },
-  "lureVelocity": {
-    "x": 0,
-    "y": 0
+  "lure": {
+    "mass": 0.001,
+    "drag": 0.003,
+    "position": {
+      "x": 6.424871130596428,
+      "y": 1.3999999999999997
+    },
+    "velocity": {
+      "x": 0,
+      "y": 0
+    },
+    "reusage": {
+      "force": {
+        "x": 0,
+        "y": 0
+      }
+    }
   },
   "reusage": {
     "targetPosition": {
