@@ -31,11 +31,11 @@
                 });
                 this.rod.alignTo(initialAngle);
 
-                this.wire = new Wire({}, this.rod.tipPosition);
+                this.filament = new Filament({}, this.rod.tipPosition);
                 this.lureMass = 0.001;
                 this.lureDrag = 0.003;
                 this.lurePosition = new Pair();
-                this.lurePosition.load(this.wire.position[Wire.numSegments()]);
+                this.lurePosition.load(this.filament.position[Filament.numSegments()]);
                 this.lureVelocity = new Pair();
 
                 // Avoid object allocation in inner loop
@@ -57,15 +57,15 @@
             Cast.prototype.update = function(controls) {
                 var stepsize = controls.stepsize;
 
-                this.wire.update(
+                this.filament.update(
                     stepsize,
                     this.gravity,
                     this.rod.tipPosition,
                     this.rod.tipVelocity,
                     this.lurePosition,
                     this.lureVelocity);
-                this.wire.storeBottomEndForce(this.gravity, this.reusage.bottomEndForce);
-                this.wire.storeTopEndForce(this.gravity, this.reusage.topEndForce);
+                this.filament.storeBottomEndForce(this.gravity, this.reusage.bottomEndForce);
+                this.filament.storeTopEndForce(this.gravity, this.reusage.topEndForce);
                 this.reusage.topEndForce
                     .addProduct(this.lureMass, this.gravity)
                     .subtractProduct(this.lureDrag * this.lureVelocity.norm(), this.lureVelocity);
@@ -96,7 +96,7 @@
                 r = 0.75 * this.rod.radius();
                 context.quadraticCurveTo(r * x, r * y, this.rod.tipPosition.x, this.rod.tipPosition.y);
 
-                this.wire.visualize(context, elapsedTime);
+                this.filament.visualize(context, elapsedTime);
 
                 context.restore();
             }
