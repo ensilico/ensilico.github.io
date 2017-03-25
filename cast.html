@@ -59,8 +59,8 @@
                     this.gravity,
                     this.rod.tipPosition,
                     this.rod.tipVelocity,
-                    this.lurePosition,
-                    this.lureVelocity);
+                    this.lure.position,
+                    this.lure.velocity);
                 this.filament.storeHeadForce(this.gravity, this.reusage.headForce);
                 this.filament.storeTailForce(this.gravity, this.reusage.tailForce);
                 this.lure.update(stepsize, this.gravity, this.reusage.tailForce);
