@@ -35,7 +35,7 @@
                 this.lureMass = 0.001;
                 this.lureDrag = 0.003;
                 this.lurePosition = new Pair();
-                this.lurePosition.load(this.wire.position[this.wire.numSegments]);
+                this.lurePosition.load(this.wire.position[Wire.numSegments()]);
                 this.lureVelocity = new Pair();
 
                 // Avoid object allocation in inner loop
