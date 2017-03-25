@@ -37,10 +37,10 @@
 
                 // Avoid object allocation in inner loop
                 this.reusage = {
-                    targetPosition: new Pair(),
-                    targetVelocity: new Pair(),
                     headForce: new Pair(),
-                    tailForce: new Pair()
+                    tailForce: new Pair(),
+                    targetPosition: new Pair(),
+                    targetVelocity: new Pair()
                 };
             }
 
@@ -53,6 +53,10 @@
 
             Cast.prototype.update = function(controls) {
                 var stepsize = controls.stepsize;
+                var headForce = this.reusage.headForce;
+                var tailForce = this.reusage.tailForce;
+                var targetPosition = this.reusage.targetPosition;
+                var targetVelocity = this.reusage.targetVelocity;
 
                 this.filament.update(
                     stepsize,
@@ -61,19 +65,17 @@
                     this.rod.tipVelocity,
                     this.lure.position,
                     this.lure.velocity);
-                this.filament.storeHeadForce(this.gravity, this.reusage.headForce);
-                this.filament.storeTailForce(this.gravity, this.reusage.tailForce);
-                this.lure.update(stepsize, this.gravity, this.reusage.tailForce);
+                this.filament.storeHeadForce(this.gravity, headForce);
+                this.filament.storeTailForce(this.gravity, tailForce);
+                this.lure.update(stepsize, this.gravity, tailForce);
 
                 this.bot.update(stepsize, controls.pointer.contact, controls.pointer.displacement.y);
 
-                var targetPosition = this.reusage.targetPosition;
                 targetPosition.loadPolar(this.rod.radius(), this.bot.angle);
 
-                var targetVelocity = this.reusage.targetVelocity;
                 targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
 
-                this.rod.update(stepsize, this.gravity, this.reusage.headForce, targetPosition, targetVelocity);
+                this.rod.update(stepsize, this.gravity, headForce, targetPosition, targetVelocity);
             }
 
             Cast.prototype.visualize = function(context, elapsedTime) {
