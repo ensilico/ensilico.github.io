@@ -256,7 +256,6 @@ function Filament(properties, headPosition) {
             y: 0
         });
         this.position.push(p);
-
         this.velocity.push(new Pair());
     }
 
@@ -312,10 +311,6 @@ Filament.prototype.storeTailForce = function(gravity, tailForce) {
 }
 
 Filament.prototype.update = function(stepsize, gravity, headPosition, headVelocity, tailPosition, tailVelocity) {
-    var upperForce = this.reusage.upperForce;
-    var lowerForce = this.reusage.lowerForce;
-    var accumulator = this.reusage.accumulator;
-
     this.position[0].load(headPosition);
     this.velocity[0].load(headVelocity);
     this.position[Filament.numSegments()].load(tailPosition);
@@ -324,6 +319,9 @@ Filament.prototype.update = function(stepsize, gravity, headPosition, headVeloci
 
     var massRate = this.mass / (stepsize + Scalar.tiny());
     var lumped = this.spring * stepsize + this.damping;
+    var upperForce = this.reusage.upperForce;
+    var lowerForce = this.reusage.lowerForce;
+    var accumulator = this.reusage.accumulator;
 
     for (var i = 1; i < Filament.numSegments(); i++) {
         upperForce
