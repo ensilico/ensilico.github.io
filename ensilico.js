@@ -211,7 +211,7 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
     this.tipPosition.addProduct(stepsize, velocity);
 }
 
-function Filament(properties, bottomEndPosition) {
+function Filament(properties, headPosition) {
     // Default values
     this.spacing = 0.2;
     this.mass = 0.0004;
@@ -226,7 +226,7 @@ function Filament(properties, bottomEndPosition) {
     this.velocity = [];
     for (var i = 0; i <= Filament.numSegments(); i++) {
         var p = new Pair();
-        p.load(bottomEndPosition).add({
+        p.load(headPosition).add({
             x: i * this.spacing,
             y: 0
         });
@@ -273,20 +273,20 @@ Filament.prototype.scalarForce = function(i) {
     return this.reusage.accumulator.dot(this.axis[i]) - this.spring * this.spacing;
 }
 
-Filament.prototype.storeBottomEndForce = function(gravity, bottomEndForce) {
-    bottomEndForce.loadProduct(this.mass, gravity).addProduct(this.scalarForce(0), this.axis[0]);
+Filament.prototype.storeHeadForce = function(gravity, headForce) {
+    headForce.loadProduct(this.mass, gravity).addProduct(this.scalarForce(0), this.axis[0]);
 }
 
-Filament.prototype.storeTopEndForce = function(gravity, topEndForce) {
+Filament.prototype.storeTailForce = function(gravity, tailForce) {
     var i = Filament.numSegments() - 1;
-    topEndForce.loadProduct(this.mass, gravity).subtractProduct(this.scalarForce(i), this.axis[i]);
+    tailForce.loadProduct(this.mass, gravity).subtractProduct(this.scalarForce(i), this.axis[i]);
 }
 
-Filament.prototype.update = function(stepsize, gravity, bottomEndPosition, bottomEndVelocity, topEndPosition, topEndVelocity) {
-    this.position[0].load(bottomEndPosition);
-    this.velocity[0].load(bottomEndVelocity);
-    this.position[Filament.numSegments()].load(topEndPosition);
-    this.velocity[Filament.numSegments()].load(topEndVelocity);
+Filament.prototype.update = function(stepsize, gravity, headPosition, headVelocity, tailPosition, tailVelocity) {
+    this.position[0].load(headPosition);
+    this.velocity[0].load(headVelocity);
+    this.position[Filament.numSegments()].load(tailPosition);
+    this.velocity[Filament.numSegments()].load(tailVelocity);
     this.updateAxes();
 
     var massRate = this.mass / (stepsize + Scalar.tiny());
