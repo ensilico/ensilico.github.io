@@ -31,6 +31,10 @@ Scalar.lagRate = function(state, target, responsiveness, stepsize) {
     return responsiveness * (target - state) / (responsiveness * stepsize + 1);
 }
 
+Scalar.integrate = function(state, rate, stepsize) {
+    return stepsize * rate + state;
+}
+
 function Pair() {
     this.x = 0;
     this.y = 0;
@@ -151,6 +155,12 @@ Pair.prototype.normalize = function() {
     return this.divideBy(this.norm() + Scalar.tiny());
 }
 
+Pair.prototype.integrate = function(rate, stepsize) {
+    this.x += stepsize * rate.x;
+    this.y += stepsize * rate.y;
+    return this;
+}
+
 function Particle() {
     this.mass = 0.001;
     this.drag = 0.003;
@@ -173,7 +183,7 @@ Particle.prototype.update = function(stepsize, gravity, externalForce) {
         .addProduct(massRate, this.velocity);
     var denominator = massRate + this.drag * this.velocity.norm();
     this.velocity.load(force).divideBy(denominator);
-    this.position.addProduct(stepsize, this.velocity);
+    this.position.integrate(this.velocity, stepsize);
 }
 
 // Pivots about the origin
@@ -233,7 +243,7 @@ Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition
     velocity.addProduct(corrector, this.tipPosition);
 
     this.tipVelocity.load(velocity);
-    this.tipPosition.addProduct(stepsize, velocity);
+    this.tipPosition.integrate(velocity, stepsize);
 }
 
 function Filament(properties, headPosition) {
@@ -342,7 +352,7 @@ Filament.prototype.update = function(stepsize, gravity, headPosition, headVeloci
             .loadProduct(accumulator.dot(this.axis[i]), this.axis[i])
             .add(lowerForce)
             .divideBy(massRate + fluid);
-        this.position[i].addProduct(stepsize, this.velocity[i]);
+        this.position[i].integrate(this.velocity[i], stepsize);
     }
 }
 
