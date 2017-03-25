@@ -93,7 +93,7 @@
                 var y = Math.sin(this.bot.angle);
                 context.moveTo(r * x, r * y);
 
-                r = 0.5 * this.rod.radius();
+                r = 0.75 * this.rod.radius();
                 context.quadraticCurveTo(r * x, r * y, this.rod.tipPosition.x, this.rod.tipPosition.y);
 
                 this.wire.visualize(context, elapsedTime);
