@@ -164,11 +164,16 @@ function Particle() {
 }
 
 Particle.prototype.update = function(stepsize, gravity, externalForce) {
-    this.reusage.force
+    var massRate = this.mass / (stepsize + Scalar.tiny());
+
+    var force = this.reusage.force;
+    force
         .load(externalForce)
         .addProduct(this.mass, gravity)
-        .subtractProduct(this.drag * this.velocity.norm(), this.velocity);
-    this.velocity.addProduct(stepsize / this.mass, this.reusage.force);
+        .addProduct(massRate, this.velocity);
+
+    var denominator = massRate + this.drag * this.velocity.norm();
+    this.velocity.load(force).divideBy(denominator);
     this.position.addProduct(stepsize, this.velocity);
 }
 
