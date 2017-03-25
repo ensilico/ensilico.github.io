@@ -43,7 +43,6 @@
     }
   },
   "wire": {
-    "numSegments": 20,
     "spacing": 0.2,
     "mass": 0.0004,
     "spring": 10,
