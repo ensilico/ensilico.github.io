@@ -32,11 +32,8 @@
                 this.rod.alignTo(initialAngle);
 
                 this.filament = new Filament({}, this.rod.tipPosition);
-                this.lureMass = 0.001;
-                this.lureDrag = 0.003;
-                this.lurePosition = new Pair();
-                this.lurePosition.load(this.filament.position[Filament.numSegments()]);
-                this.lureVelocity = new Pair();
+                this.lure = new Particle();
+                this.lure.position.load(this.filament.position[Filament.numSegments()]);
 
                 // Avoid object allocation in inner loop
                 this.reusage = {
@@ -66,11 +63,7 @@
                     this.lureVelocity);
                 this.filament.storeHeadForce(this.gravity, this.reusage.headForce);
                 this.filament.storeTailForce(this.gravity, this.reusage.tailForce);
-                this.reusage.tailForce
-                    .addProduct(this.lureMass, this.gravity)
-                    .subtractProduct(this.lureDrag * this.lureVelocity.norm(), this.lureVelocity);
-                this.lureVelocity.addProduct(stepsize / this.lureMass, this.reusage.tailForce);
-                this.lurePosition.addProduct(stepsize, this.lureVelocity);
+                this.lure.update(stepsize, this.gravity, this.reusage.tailForce);
 
                 this.bot.update(stepsize, controls.pointer.contact, controls.pointer.displacement.y);
 
