@@ -344,11 +344,11 @@
       "x": 0,
       "y": 0
     },
-    "bottomEndForce": {
+    "headForce": {
       "x": 0,
       "y": 0
     },
-    "topEndForce": {
+    "tailForce": {
       "x": 0,
       "y": 0
     }
