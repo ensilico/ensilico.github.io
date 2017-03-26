@@ -25,7 +25,7 @@
                 });
                 this.rod.alignTo(initialAngle);
 
-                this.filament = new Filament({}, this.rod.tipPosition);
+                this.line = new Filament({}, this.rod.tipPosition);
 
                 this.lure = new Particle({});
                 this.lure.position.load(this.filament.position[Filament.numSegments()]);
@@ -58,7 +58,7 @@
                 var targetPosition = this.reusage.targetPosition;
                 var targetVelocity = this.reusage.targetVelocity;
 
-                this.filament.update(
+                this.line.update(
                     stepsize,
                     Cast.gravity,
                     this.rod.tipPosition,
@@ -66,8 +66,8 @@
                     this.lure.position,
                     this.lure.velocity);
 
-                this.filament.storeHeadForce(Cast.gravity, headForce);
-                this.filament.storeTailForce(Cast.gravity, tailForce);
+                this.line.storeHeadForce(Cast.gravity, headForce);
+                this.line.storeTailForce(Cast.gravity, tailForce);
                 this.lure.update(stepsize, Cast.gravity, tailForce);
 
                 this.bot.update(stepsize, controls.pointer.contact, controls.pointer.displacement.y);
@@ -90,7 +90,7 @@
                 r = 0.75 * this.rod.radius();
                 context.quadraticCurveTo(r * x, r * y, this.rod.tipPosition.x, this.rod.tipPosition.y);
 
-                this.filament.visualize(context, elapsedTime);
+                this.line.visualize(context, elapsedTime);
 
                 context.restore();
             }
