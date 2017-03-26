@@ -15,9 +15,9 @@
   "rod": {
     "overallLength": 3,
     "pivotOffset": 0.2,
-    "mass": 0.1,
-    "spring": 18,
-    "damping": 0.1,
+    "mass": 0.5,
+    "spring": 20,
+    "damping": 0.2,
     "drag": 0.05,
     "tipPosition": {
       "x": 2.4248711305964283,
