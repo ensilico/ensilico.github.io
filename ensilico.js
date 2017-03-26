@@ -419,7 +419,7 @@ Platform.softCopy = function(dst, src) {
     }
 
     if (log.length) {
-        console.log("softCopy: " + Array.join(log));
+        console.log("softCopy: " + log.join());
     }
 
     return dst;
