@@ -42,7 +42,7 @@
     "spacing": 0.2,
     "mass": 0.0003,
     "spring": 10,
-    "damping": 0.1,
+    "damping": 0.01,
     "drag": 0.0005,
     "position": [
       {
