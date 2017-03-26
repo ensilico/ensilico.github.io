@@ -28,7 +28,7 @@
                 this.line = new Filament({}, this.rod.tipPosition);
 
                 this.lure = new Particle({});
-                this.lure.position.load(this.filament.position[Filament.numSegments()]);
+                this.lure.position.load(this.line.position[Filament.numSegments()]);
 
                 // Avoid object allocation in inner loop
                 this.reusage = {
