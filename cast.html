@@ -3,31 +3,14 @@
         <script src="ensilico.js"></script>
         <script>
             function Cast() {
-                var initialAngle = Scalar.toRadians(30);
-                this.bot = new Bot({
-                    position: {
-                        x: 3,
-                        y: -3
-                    },
-                    minAngle: initialAngle,
-                    maxAngle: Scalar.toRadians(150),
-                    gain: 0.01,
-                    responsiveness: 10
-                });
+                this.bot = new Bot();
 
-                this.rod = new Flexor({
-                    overallLength: 3,
-                    pivotOffset: 0.2,
-                    mass: 0.1,
-                    spring: 18,
-                    damping: 0.3,
-                    drag: 0.1
-                });
-                this.rod.alignTo(initialAngle);
+                this.rod = new Flexor();
+                this.rod.alignTo(this.bot.angle);
 
-                this.line = new Filament({}, this.rod.tipPosition);
+                this.line = new Filament(this.rod.tipPosition);
 
-                this.lure = new Particle({});
+                this.lure = new Particle();
                 this.lure.position.load(this.line.position[Filament.numSegments()]);
 
                 // Avoid object allocation in inner loop
@@ -95,7 +78,7 @@
                 context.restore();
             }
 
-            function Bot(properties) {
+            function Bot() {
                 // Default values
                 this.position = {
                     x: 0,
@@ -104,11 +87,7 @@
                 this.minAngle = 0;
                 this.maxAngle = Scalar.toRadians(90);
                 this.gain = 0.01;
-                this.responsiveness = 1;
-
-                // Allow caller to override
-                Platform.softCopy(this, properties);
-
+                this.responsiveness = 5;
                 this.angle = this.minAngle;
                 this.rate = 0;
                 this.captureAngle = this.angle;
