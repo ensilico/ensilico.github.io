@@ -17,7 +17,7 @@
     "pivotOffset": 0.2,
     "mass": 0.1,
     "spring": 18,
-    "damping": 0.3,
+    "damping": 0.2,
     "drag": 0.1,
     "tipPosition": {
       "x": 2.4248711305964283,
@@ -40,10 +40,10 @@
   },
   "line": {
     "spacing": 0.2,
-    "mass": 0.0004,
+    "mass": 0.0005,
     "spring": 10,
-    "damping": 1,
-    "drag": 0.001,
+    "damping": 0.1,
+    "drag": 0.0001,
     "position": [
       {
         "x": 2.4248711305964283,
@@ -322,8 +322,8 @@
     }
   },
   "lure": {
-    "mass": 0.001,
-    "drag": 0.003,
+    "mass": 0.005,
+    "drag": 0.001,
     "position": {
       "x": 6.424871130596428,
       "y": 1.3999999999999997
