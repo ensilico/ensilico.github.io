@@ -379,10 +379,14 @@ function Platform() {}
 
 // Copies values from src for corresponding properties in dst
 // Returns dst
+// Logs to console
 Platform.softCopy = function(dst, src) {
+    var log = [];
     for (var key in src) {
+        var srcOwn = src.hasOwnProperty(key);
+        var dstOwn = dst.hasOwnProperty(key);
         // The key must be in both objects
-        if (src.hasOwnProperty(key) && dst.hasOwnProperty(key)) {
+        if (srcOwn && dstOwn) {
             var srcValue = src[key];
             var dstValue = dst[key];
             var srcType = typeof srcValue;
@@ -393,10 +397,31 @@ Platform.softCopy = function(dst, src) {
                     dst[key] = srcValue;
                 } else if (srcValue && dstValue) {
                     Platform.softCopy(dstValue, srcValue);
+                } else {
+                    if (!srcValue) {
+                        log.push("src error at " + key);
+                    }
+                    if (!dstValue) {
+                        log.push("dst error at " + key);
+                    }
                 }
+            } else {
+                log.push("type mismatch at " + key);
+            }
+        } else {
+            if (!srcOwn) {
+                log.push("skip src key " + key);
+            }
+            if (!dstOwn) {
+                log.push("no dst key " + key);
             }
         }
     }
+
+    if (log.length) {
+        console.log("softCopy: " + Array.join(log));
+    }
+
     return dst;
 }
 
