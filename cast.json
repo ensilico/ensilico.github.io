@@ -40,10 +40,10 @@
   },
   "line": {
     "spacing": 0.2,
-    "mass": 0.0005,
+    "mass": 0.0003,
     "spring": 10,
     "damping": 0.1,
-    "drag": 0.0003,
+    "drag": 0.0005,
     "position": [
       {
         "x": 2.4248711305964283,
