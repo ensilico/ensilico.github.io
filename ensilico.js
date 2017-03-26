@@ -191,7 +191,7 @@ Particle.prototype.update = function(stepsize, gravity, externalForce) {
 }
 
 // Pivots about the origin
-function Rod(properties) {
+function Flexor(properties) {
     // Default values
     this.overallLength = 3;
     this.pivotOffset = 0.2;
@@ -213,16 +213,16 @@ function Rod(properties) {
     };
 }
 
-Rod.prototype.radius = function() {
+Flexor.prototype.radius = function() {
     return this.overallLength - this.pivotOffset;
 }
 
-Rod.prototype.alignTo = function(angle) {
+Flexor.prototype.alignTo = function(angle) {
     this.tipPosition.loadPolar(this.radius(), angle);
     return this;
 }
 
-Rod.prototype.update = function(stepsize, gravity, externalForce, targetPosition, targetVelocity) {
+Flexor.prototype.update = function(stepsize, gravity, externalForce, targetPosition, targetVelocity) {
     var massRate = this.mass / (stepsize + Scalar.tiny());
     var force = this.reusage.force;
     var velocity = this.reusage.velocity;
