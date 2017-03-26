@@ -99,11 +99,14 @@
                 this.rate = Scalar.lagRate(this.angle, target, this.responsiveness, stepsize);
                 this.angle = Scalar.integrate(this.angle, this.rate, stepsize);
             }
+
+            var theSim; // for debug
        </script>
     </head>
     <body onload="Executive.startFromJson('cast', new Cast(), 'cast.json')">
         <canvas id="cast" width="800" height="600">
             Opps.
         </canvas>
+        <button onclick="Executive.breakFrame('cast', function(sim){theSim=sim;})">Break</button>
     </body>
 </html>
