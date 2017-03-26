@@ -161,15 +161,12 @@ Pair.prototype.integrate = function(rate, stepsize) {
     return this;
 }
 
-function Particle(properties) {
+function Particle() {
     // Default values
-    this.mass = 0.001;
-    this.drag = 0.003;
+    this.mass = 0.005;
+    this.drag = 0.001;
     this.position = new Pair();
     this.velocity = new Pair();
-
-    // Allow caller to override
-    Platform.softCopy(this, properties);
 
     // Avoid object allocation in inner loop
     this.reusage = {
@@ -191,20 +188,17 @@ Particle.prototype.update = function(stepsize, gravity, externalForce) {
 }
 
 // Pivots about the origin
-function Flexor(properties) {
+function Flexor() {
     // Default values
     this.overallLength = 3;
     this.pivotOffset = 0.2;
     this.mass = 0.1;
     this.spring = 10;
-    this.damping = 1;
-    this.drag = 1;
+    this.damping = 0.1;
+    this.drag = 0.1;
     this.tipPosition = new Pair();
     this.alignTo(0);
     this.tipVelocity = new Pair();
-
-    // Allow caller to override
-    Platform.softCopy(this, properties);
 
     // Avoid object allocation in inner loop
     this.reusage = {
@@ -250,16 +244,13 @@ Flexor.prototype.update = function(stepsize, gravity, externalForce, targetPosit
     this.tipPosition.integrate(velocity, stepsize);
 }
 
-function Filament(properties, headPosition) {
+function Filament(headPosition) {
     // Default values
     this.spacing = 0.2;
-    this.mass = 0.0004;
+    this.mass = 0.0005;
     this.spring = 10;
-    this.damping = 1;
-    this.drag = 0.001;
-
-    // Allow caller to override
-    Platform.softCopy(this, properties);
+    this.damping = 0.1;
+    this.drag = 0.0001;
 
     this.position = [];
     this.velocity = [];
