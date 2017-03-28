@@ -433,6 +433,7 @@ function Executive(simulation, context) {
     this.context = context;
     this.simulationLeadTime = 0;
     this.onBreakFrame = null;
+    this.clutch = new Clutch();
 
     // Default values
     var preferences = {
@@ -449,14 +450,10 @@ function Executive(simulation, context) {
         stepsize: preferences.stepsize,
         pointer: {
             contact: 0,
-            displacement: new Pair()
+            velocity: new Pair()
         }
     };
     this.maxStepsPerFrame = preferences.maxStepsPerFrame;
-
-    this.isCaptured = false;
-    this.pointerCapture = new Pair();
-    this.pointerPosition = new Pair();
 }
 
 Executive.previousTimestamp = null;
@@ -521,7 +518,16 @@ Executive.prototype.onFrame = function(elapsedTime) {
     var numSteps = Math.ceil(Scalar.rationalMin(simulationTime, stepsize, this.maxStepsPerFrame));
 
     // Calculate adjustment for the next frame
-    this.simulationLeadTime = Math.max(0, numSteps * stepsize - simulationTime);
+    var period = numSteps * stepsize;
+    this.simulationLeadTime = Math.max(0, period - simulationTime);
+
+    // Calculate pointer velocity
+    var contact = this.clutch.engaged ? 1 : 0;
+    this.controls.pointer.contact = contact;
+    this.controls.pointer.velocity
+        .loadDelta(this.clutch.currentPosition, this.clutch.basePosition)
+        .multiplyBy(contact / (period + Scalar.tiny()));
+    this.clutch.rebase();
 
     // Update the simulation
     this.updateSimulation(numSteps);
@@ -536,9 +542,6 @@ Executive.prototype.updateSimulation = function(numSteps) {
         this.onBreakFrame = null;
         debugger;
     }
-
-    this.controls.pointer.contact = this.isCaptured ? 1 : 0;
-    this.controls.pointer.displacement.loadDelta(this.pointerPosition, this.pointerCapture);
 
     for (var i = 0; i < numSteps; i++) {
         this.simulation.update(this.controls);
@@ -560,44 +563,53 @@ Executive.prototype.visualizeSimulation = function(elapsedTime) {
 }
 
 Executive.prototype.registerListeners = function(canvas) {
-    var self = this;
+    var clutch = this.clutch;
 
     canvas.addEventListener("mousedown", function(event) {
-        self.onPointerDown(event.clientX, event.clientY);
+        clutch.onEngage(event.clientX, event.clientY);
     }, false);
     canvas.addEventListener("mousemove", function(event) {
-        self.onPointerMove(event.clientX, event.clientY);
+        clutch.onMove(event.clientX, event.clientY);
     }, false);
     canvas.addEventListener("mouseup", function() {
-        self.onPointerUp();
+        clutch.onDisengage();
     }, false);
 
     canvas.addEventListener("touchstart", function(event) {
         var touch = event.touches[0];
-        self.onPointerDown(touch.clientX, touch.clientY);
+        clutch.onEngage(touch.clientX, touch.clientY);
     }, false);
     canvas.addEventListener("touchmove", function(event) {
         var touch = event.touches[0];
-        self.onPointerMove(touch.clientX, touch.clientY);
+        clutch.onMove(touch.clientX, touch.clientY);
     }, false);
     canvas.addEventListener("touchend", function() {
-        self.onPointerUp();
+        clutch.onDisengage();
     }, false);
 }
 
-Executive.prototype.onPointerDown = function(x, y) {
-    this.isCaptured = true;
-    this.pointerCapture.x = x;
-    this.pointerCapture.y = y;
-    this.pointerPosition.x = x;
-    this.pointerPosition.y = y;
+function Clutch() {
+    this.engaged = false;
+    this.currentPosition = new Pair();
+    this.basePosition = new Pair();
 }
 
-Executive.prototype.onPointerMove = function(x, y) {
-    this.pointerPosition.x = x;
-    this.pointerPosition.y = y;
+Clutch.prototype.onEngage = function(x, y) {
+    this.engaged = true;
+    this.currentPosition.x = x;
+    this.currentPosition.y = y;
+    this.rebase();
 }
 
-Executive.prototype.onPointerUp = function() {
-    this.isCaptured = false;
+Clutch.prototype.onMove = function(x, y) {
+    this.currentPosition.x = x;
+    this.currentPosition.y = y;
+}
+
+Clutch.prototype.onDisengage = function() {
+    this.engaged = false;
+}
+
+Clutch.prototype.rebase = function() {
+    this.basePosition.load(this.currentPosition);
 }
