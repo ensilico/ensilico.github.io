@@ -368,6 +368,10 @@ Filament.prototype.visualize = function(context, elapsedTime) {
 
 function Platform() {}
 
+Platform.window = function() {
+    return window;
+}
+
 // Copies values from src for corresponding properties in dst
 // Returns dst
 // Logs to console
@@ -410,7 +414,7 @@ Platform.softCopy = function(dst, src) {
     }
 
     if (log.length) {
-        console.log("softCopy: " + log.join());
+        Platform.window().console.log("softCopy: " + log.join());
     }
 
     return dst;
@@ -460,11 +464,6 @@ Executive.previousTimestamp = null;
 
 Executive.instances = {};
 
-// An attempt to centralize the dependency
-Executive.mainWindow = function() {
-    return window;
-}
-
 Executive.breakFrame = function(id, onBreakFrame) {
     Executive.instances[id].onBreakFrame = onBreakFrame;
 }
@@ -472,13 +471,13 @@ Executive.breakFrame = function(id, onBreakFrame) {
 // Simulation to canvas is assumed to be 1:1
 // Starting an id already started is neither supported nor defined
 Executive.start = function(id, simulation) {
-    var canvas = Executive.mainWindow().document.getElementById(id);
+    var canvas = Platform.window().document.getElementById(id);
     var context = canvas.getContext("2d");
     var instance = new Executive(simulation, context);
     instance.registerListeners(canvas);
     Executive.instances[id] = instance;
     if (!Executive.previousTimestamp) {
-        Executive.previousTimestamp = Executive.mainWindow().performance.now();
+        Executive.previousTimestamp = Platform.window().performance.now();
         Executive.nextFrame();
     }
 }
@@ -493,7 +492,7 @@ Executive.startFromJson = function(id, simulation, url) {
 }
 
 Executive.nextFrame = function() {
-    Executive.mainWindow().requestAnimationFrame(Executive.onFrame);
+    Platform.window().requestAnimationFrame(Executive.onFrame);
 }
 
 Executive.onFrame = function(timestamp) {
