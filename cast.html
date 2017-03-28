@@ -53,7 +53,7 @@
                 this.line.storeTailForce(Cast.gravity, tailForce);
                 this.lure.update(stepsize, Cast.gravity, tailForce);
 
-                this.bot.update(stepsize, controls.pointer.contact, controls.pointer.displacement.y);
+                this.bot.update(stepsize, controls.pointer.velocity.y);
 
                 targetPosition.loadPolar(this.rod.radius(), this.bot.angle);
                 targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
@@ -90,13 +90,11 @@
                 this.responsiveness = 5;
                 this.angle = this.minAngle;
                 this.rate = 0;
-                this.captureAngle = this.angle;
             }
 
-            Bot.prototype.update = function(stepsize, pointerContact, pointerDisplacement) {
-                this.captureAngle = Scalar.lerp(this.angle, this.captureAngle, pointerContact);
-                var target = pointerContact * pointerDisplacement * this.gain + this.captureAngle;
-                this.rate = Scalar.lagRate(this.angle, target, this.responsiveness, stepsize);
+            Bot.prototype.update = function(stepsize, pointerVelocity) {
+                var target = this.gain * pointerVelocity;
+                this.rate = Scalar.lag(this.rate, target, this.responsiveness, stepsize);
                 this.angle = Scalar.integrate(this.angle, this.rate, stepsize);
             }
 
