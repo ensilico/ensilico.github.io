@@ -244,7 +244,7 @@ Flexor.prototype.update = function(stepsize, gravity, externalForce, targetPosit
     this.tipPosition.integrate(velocity, stepsize);
 }
 
-function Filament(headPosition) {
+function Filament(headPosition, tailPosition) {
     // Default values
     this.spacing = 0.2;
     this.mass = 0.0005;
@@ -252,20 +252,18 @@ function Filament(headPosition) {
     this.damping = 0.1;
     this.drag = 0.0001;
 
+    var n = Filament.numSegments();
     this.position = [];
     this.velocity = [];
-    for (var i = 0; i <= Filament.numSegments(); i++) {
+    for (var i = 0; i <= n; i++) {
         var p = new Pair();
-        p.load(headPosition).add({
-            x: i * this.spacing,
-            y: 0
-        });
+        p.loadLerp(headPosition, tailPosition, i / n);
         this.position.push(p);
         this.velocity.push(new Pair());
     }
 
     this.axis = [];
-    for (var i = 0; i < Filament.numSegments(); i++) {
+    for (var i = 0; i < n; i++) {
         this.axis.push(new Pair());
     }
     this.updateAxes();
@@ -285,7 +283,8 @@ Filament.numSegments = function() {
 }
 
 Filament.prototype.updateAxes = function() {
-    for (var i = 0; i < Filament.numSegments(); i++) {
+    var n = Filament.numSegments();
+    for (var i = 0; i < n; i++) {
         this.axis[i]
             .loadDelta(this.position[i+1], this.position[i])
             .normalize();
@@ -316,16 +315,16 @@ Filament.prototype.storeTailForce = function(gravity, tailForce) {
 }
 
 Filament.prototype.update = function(stepsize, gravity, headPosition, headVelocity, tailPosition, tailVelocity) {
+    var n = Filament.numSegments();
     this.position[0].load(headPosition);
     this.velocity[0].load(headVelocity);
-    this.position[Filament.numSegments()].load(tailPosition);
-    this.velocity[Filament.numSegments()].load(tailVelocity);
+    this.position[n].load(tailPosition);
+    this.velocity[n].load(tailVelocity);
     this.updateAxes();
 
     var halfstep = 0.5 * stepsize;
     var massRate = this.mass / (halfstep + Scalar.tiny());
     var lumped = this.spring * halfstep + this.damping;
-    var n = Filament.numSegments();
     this.updateCore(halfstep, gravity, massRate, lumped, 0, n, 1);
     this.updateCore(halfstep, gravity, massRate, lumped, n, 0, -1);
 }
