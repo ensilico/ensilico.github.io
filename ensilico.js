@@ -326,11 +326,11 @@ Filament.prototype.update = function(stepsize, gravity, headPosition, headVeloci
     var massRate = this.mass / (halfstep + Scalar.tiny());
     var lumped = this.spring * halfstep + this.damping;
     var n = Filament.numSegments();
-    this.updateCore(halfstep, massRate, lumped, 0, n, 1);
-    this.updateCore(halfstep, massRate, lumped, n, 0, -1);
+    this.updateCore(halfstep, gravity, massRate, lumped, 0, n, 1);
+    this.updateCore(halfstep, gravity, massRate, lumped, n, 0, -1);
 }
 
-Filament.prototype.updateCore = function(stepsize, massRate, lumped, start, end, increment) {
+Filament.prototype.updateCore = function(stepsize, gravity, massRate, lumped, start, end, increment) {
     var leadForce = this.reusage.leadForce;
     var lagForce = this.reusage.lagForce;
     var accumulator = this.reusage.accumulator;
