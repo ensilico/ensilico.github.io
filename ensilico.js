@@ -257,6 +257,7 @@ function Filament(headPosition, tailPosition) {
     this.spring = 10;
     this.damping = 0.1;
     this.drag = 0.0001;
+    this.bidi = 1;
 
     var n = Filament.numSegments();
     this.position = [];
@@ -340,7 +341,11 @@ Filament.prototype.update = function(stepsize, gravity, headPosition, headVeloci
     var massRate = this.mass / (halfstep + Scalar.tiny());
     var lumped = this.spring * halfstep + this.damping;
     this.updateCore(halfstep, gravity, massRate, lumped, 0, n, 1, this.upAxis);
-    this.updateCore(halfstep, gravity, massRate, lumped, n, 0, -1, this.downAxis);
+    if (this.bidi == 1) {
+        this.updateCore(halfstep, gravity, massRate, lumped, n, 0, -1, this.downAxis);
+    } else {
+        this.updateCore(halfstep, gravity, massRate, lumped, 0, n, 1, this.upAxis);
+    }
 }
 
 Filament.prototype.updateCore = function(stepsize, gravity, massRate, lumped, start, end, sense, axis) {
