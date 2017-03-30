@@ -302,7 +302,6 @@ Filament.prototype.updateAxes = function() {
     }
 }
 
-// Assume i to be greater than or equal to 0 and less than Filament.numSegments()
 Filament.prototype.scalarForce = function(i, sense, axis) {
     var deltaPosition = this.reusage.deltaPosition;
     var deltaVelocity = this.reusage.deltaVelocity;
@@ -317,12 +316,16 @@ Filament.prototype.scalarForce = function(i, sense, axis) {
 }
 
 Filament.prototype.storeHeadForce = function(gravity, headForce) {
-    headForce.loadProduct(this.mass, gravity).addProduct(this.scalarForce(0, 1, this.upAxis), this.upAxis[0]);
+    headForce
+        .loadProduct(this.mass, gravity)
+        .addProduct(this.scalarForce(0, 1, this.upAxis), this.upAxis[0]);
 }
 
 Filament.prototype.storeTailForce = function(gravity, tailForce) {
     var n = Filament.numSegments();
-    tailForce.loadProduct(this.mass, gravity).addProduct(this.scalarForce(n, -1, this.downAxis), this.downAxis[n]);
+    tailForce
+        .loadProduct(this.mass, gravity)
+        .addProduct(this.scalarForce(n, -1, this.downAxis), this.downAxis[n]);
 }
 
 Filament.prototype.update = function(stepsize, gravity, headPosition, headVelocity, tailPosition, tailVelocity) {
