@@ -82,7 +82,9 @@
                 r = 0.75 * this.rod.radius();
                 context.quadraticCurveTo(r * x, r * y, this.rod.tipPosition.x, this.rod.tipPosition.y);
 
-                this.line.visualize(context, elapsedTime);
+                if (this.lineCoupler) {
+                    this.line.visualize(context, elapsedTime);
+                }
 
                 context.restore();
             }
