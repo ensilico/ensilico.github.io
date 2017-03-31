@@ -15,6 +15,12 @@
 
                 this.line = new Filament(this.rod.tipPosition, this.lure.position);
 
+                // A value of 0 will "pin" the lure in place
+                this.lureWarp = 1;
+
+                // A value of 0 will detach and freeze the line
+                this.lineCoupler = 1;
+
                 // Avoid object allocation in inner loop
                 this.reusage = {
                     headForce: new Pair(),
@@ -44,19 +50,20 @@
                 var targetVelocity = this.reusage.targetVelocity;
 
                 this.line.update(
-                    stepsize,
+                    stepsize * this.lineCoupler,
                     Cast.gravity,
                     this.rod.tipPosition,
                     this.rod.tipVelocity,
                     this.lure.position,
                     this.lure.velocity);
 
-                this.line.storeHeadForce(Cast.gravity, headForce);
                 this.line.storeTailForce(Cast.gravity, tailForce);
-                this.lure.update(stepsize, Cast.gravity, tailForce);
+                this.lure.update(stepsize * this.lineCoupler * this.lureWarp, Cast.gravity, tailForce);
 
                 this.bot.update(stepsize, controls.pointer.velocity.y);
 
+                this.line.storeHeadForce(Cast.gravity, headForce);
+                headForce.multiplyBy(this.lineCoupler);
                 targetPosition.loadPolar(this.rod.radius(), this.bot.angle);
                 targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
                 this.rod.update(stepsize, Cast.gravity, headForce, targetPosition, targetVelocity);
