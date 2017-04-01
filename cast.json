@@ -60,7 +60,7 @@
     "mass": 0.0002,
     "spring": 40,
     "damping": 0.05,
-    "drag": 0.0001,
+    "drag": 0.0002,
     "bidi": 1,
     "position": [
       {
