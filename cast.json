@@ -14,10 +14,10 @@
   "rod": {
     "overallLength": 3,
     "pivotOffset": 0.2,
-    "mass": 0.5,
-    "spring": 20,
-    "damping": 0.2,
-    "drag": 0.05,
+    "mass": 0.003,
+    "spring": 1.7,
+    "damping": 0.01,
+    "drag": 0.001,
     "tipPosition": {
       "x": -1.3324787860423648,
       "y": 2.4626206132600665
@@ -426,7 +426,7 @@
     }
   },
   "lureWarp": 1,
-  "lineCoupler": 1,
+  "lineCoupler": 0,
   "reusage": {
     "headForce": {
       "x": 0.00009758636305006855,
