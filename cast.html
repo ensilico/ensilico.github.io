@@ -36,7 +36,7 @@
             });
 
             Cast.waterlineY = function() {
-                return -0.8
+                return -2;
             }
 
             Cast.densityField = function(position) {
@@ -87,8 +87,8 @@
                 context.save();
                 context.translate(this.bot.position.x, this.bot.position.y);
 
-                context.moveTo(-1, Cast.waterlineY());
-                context.lineTo(1, Cast.waterlineY());
+                context.moveTo(-10, Cast.waterlineY());
+                context.lineTo(3, Cast.waterlineY());
 
                 // Rod flex curve
                 var r = -this.rod.pivotOffset;
