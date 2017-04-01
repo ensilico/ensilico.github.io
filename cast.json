@@ -426,7 +426,7 @@
     }
   },
   "lureWarp": 1,
-  "lineCoupler": 0,
+  "lineCoupler": 1,
   "reusage": {
     "headForce": {
       "x": 0.00009758636305006855,
