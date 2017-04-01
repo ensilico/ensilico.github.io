@@ -16,8 +16,8 @@
     "pivotOffset": 0.2,
     "mass": 0.003,
     "spring": 1.7,
-    "damping": 0.01,
-    "drag": 0.001,
+    "damping": 0.03,
+    "drag": 0.002,
     "tipPosition": {
       "x": -1.3324787860423648,
       "y": 2.4626206132600665
