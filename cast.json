@@ -57,7 +57,7 @@
   },
   "line": {
     "spacing": 0.2,
-    "mass": 0.0003,
+    "mass": 0.0002,
     "spring": 30,
     "damping": 0.1,
     "drag": 0.0005,
