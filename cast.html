@@ -38,7 +38,7 @@
             Cast.prototype.preferences = function() {
                 return {
                     visualScale: 32,
-                    stepsize: 0.0003
+                    stepsize: 0.0005
                 };
             }
 
@@ -70,9 +70,6 @@
             }
 
             Cast.prototype.visualize = function(context, elapsedTime) {
-                if (elapsedTime > 1/30) {
-                    console.log("overrun");
-                }
                 context.save();
                 context.translate(this.bot.position.x, this.bot.position.y);
 
