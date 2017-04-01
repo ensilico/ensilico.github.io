@@ -180,15 +180,16 @@ function Particle() {
     };
 }
 
-Particle.prototype.update = function(stepsize, gravity, externalForce) {
+Particle.prototype.update = function(stepsize, gravity, externalForce, densityField) {
     var massRate = this.mass / (stepsize + Scalar.tiny());
+    var drag = this.drag * densityField(this.position);
     var force = this.reusage.force;
 
     force
         .load(externalForce)
         .addProduct(this.mass, gravity)
         .addProduct(massRate, this.velocity);
-    var denominator = massRate + this.drag * this.velocity.norm();
+    var denominator = massRate + drag * this.velocity.norm();
     this.velocity.load(force).divideBy(denominator);
     this.position.integrate(this.velocity, stepsize);
 }
@@ -329,7 +330,7 @@ Filament.prototype.storeTailForce = function(gravity, tailForce) {
         .addProduct(this.scalarForce(n, -1, this.downAxis), this.downAxis[n]);
 }
 
-Filament.prototype.update = function(stepsize, gravity, headPosition, headVelocity, tailPosition, tailVelocity) {
+Filament.prototype.update = function(stepsize, gravity, headPosition, headVelocity, tailPosition, tailVelocity, densityField) {
     var n = Filament.numSegments();
     this.position[0].load(headPosition);
     this.velocity[0].load(headVelocity);
@@ -340,15 +341,15 @@ Filament.prototype.update = function(stepsize, gravity, headPosition, headVeloci
     var halfstep = 0.5 * stepsize;
     var massRate = this.mass / (halfstep + Scalar.tiny());
     var lumped = this.spring * halfstep + this.damping;
-    this.updateCore(halfstep, gravity, massRate, lumped, 0, n, 1, this.upAxis);
+    this.updateCore(halfstep, gravity, massRate, lumped, 0, n, 1, this.upAxis, densityField);
     if (this.bidi == 1) {
-        this.updateCore(halfstep, gravity, massRate, lumped, n, 0, -1, this.downAxis);
+        this.updateCore(halfstep, gravity, massRate, lumped, n, 0, -1, this.downAxis, densityField);
     } else {
-        this.updateCore(halfstep, gravity, massRate, lumped, 0, n, 1, this.upAxis);
+        this.updateCore(halfstep, gravity, massRate, lumped, 0, n, 1, this.upAxis, densityField);
     }
 }
 
-Filament.prototype.updateCore = function(stepsize, gravity, massRate, lumped, start, end, sense, axis) {
+Filament.prototype.updateCore = function(stepsize, gravity, massRate, lumped, start, end, sense, axis, densityField) {
     var leadForce = this.reusage.leadForce;
     var lagForce = this.reusage.lagForce;
     var accumulator = this.reusage.accumulator;
@@ -363,7 +364,7 @@ Filament.prototype.updateCore = function(stepsize, gravity, massRate, lumped, st
             .addProduct(this.mass, gravity)
             .subtractProduct(this.scalarForce(i-sense, sense, axis), axis[i-sense])
             .subtractProduct(this.spring * this.spacing, axis[i]);
-        var fluid = this.drag * this.velocity[i].norm();
+        var fluid = this.drag * densityField(this.position[i]) * this.velocity[i].norm();
         accumulator
             .loadProduct(massRate + fluid, leadForce)
             .subtractProduct(lumped - fluid, lagForce)
