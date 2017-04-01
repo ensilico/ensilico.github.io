@@ -35,6 +35,11 @@
                 y: -9.81
             });
 
+            Cast.densityFunction = function(position) {
+                // Fluid density relative to air
+                return position.y > -3.5 ? 1 : 100;
+            }
+
             Cast.prototype.preferences = function() {
                 return {
                     visualScale: 32,
@@ -55,10 +60,15 @@
                     this.rod.tipPosition,
                     this.rod.tipVelocity,
                     this.lure.position,
-                    this.lure.velocity);
+                    this.lure.velocity,
+                    Cast.densityField);
 
                 this.line.storeTailForce(Cast.gravity, tailForce);
-                this.lure.update(stepsize * this.lineCoupler * this.lureWarp, Cast.gravity, tailForce);
+                this.lure.update(
+                    stepsize * this.lineCoupler * this.lureWarp,
+                    Cast.gravity,
+                    tailForce,
+                    Cast.densityField);
 
                 this.bot.update(stepsize, controls.pointer.velocity.y);
 
