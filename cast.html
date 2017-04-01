@@ -123,7 +123,9 @@
             Bot.prototype.update = function(stepsize, pointerVelocity) {
                 var target = this.gain * pointerVelocity;
                 this.rate = Scalar.lag(this.rate, target, this.responsiveness, stepsize);
-                this.angle = Scalar.integrate(this.angle, this.rate, stepsize);
+                this.angle = Math.min(
+                    Math.max(this.minAngle, Scalar.integrate(this.angle, this.rate, stepsize)),
+                    this.maxAngle);
             }
 
             var theSim; // for debug
