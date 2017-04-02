@@ -181,15 +181,15 @@ function Particle() {
     };
 }
 
-Particle.prototype.update = function(stepsize, gravity, externalForce, densityField) {
+Particle.prototype.update = function(stepsize, geosphere, externalForce) {
     var massRate = this.mass / (stepsize + Scalar.tiny());
-    var densityRatio = densityField(this.position);
+    var densityRatio = geosphere.density(this.position);
     var drag = this.drag * densityRatio;
     var force = this.reusage.force;
 
     force
         .load(externalForce)
-        .addProduct(this.mass * (1 - densityRatio * this.buoyancy), gravity)
+        .addProduct(this.mass * (1 - densityRatio * this.buoyancy), geosphere.gravity)
         .addProduct(massRate, this.velocity);
     var denominator = massRate + drag * this.velocity.norm();
     this.velocity.load(force).divideBy(denominator);
@@ -225,14 +225,14 @@ Flexor.prototype.alignTo = function(angle) {
     return this;
 }
 
-Flexor.prototype.update = function(stepsize, gravity, externalForce, targetPosition, targetVelocity) {
+Flexor.prototype.update = function(stepsize, geosphere, externalForce, targetPosition, targetVelocity) {
     var massRate = this.mass / (stepsize + Scalar.tiny());
     var force = this.reusage.force;
     var velocity = this.reusage.velocity;
 
     force
         .load(externalForce)
-        .addProduct(this.mass, gravity)
+        .addProduct(this.mass, geosphere.gravity)
         .addProduct(massRate, this.tipVelocity)
         .addProduct(this.spring, targetPosition)
         .addProduct(this.damping, targetVelocity);
@@ -319,22 +319,22 @@ Filament.prototype.scalarForce = function(i, sense, axis) {
     return accumulator.dot(axis[i]) - this.spring * this.spacing;
 }
 
-Filament.prototype.storeHeadForce = function(gravity, densityField, headForce) {
-    var densityRatio = densityField(this.position);
+Filament.prototype.storeHeadForce = function(geosphere, headForce) {
+    var densityRatio = geosphere.density(this.position);
     headForce
-        .loadProduct(this.mass * (1 - densityRatio * this.buoyancy), gravity)
+        .loadProduct(this.mass * (1 - densityRatio * this.buoyancy), geosphere.gravity)
         .addProduct(this.scalarForce(0, 1, this.upAxis), this.upAxis[0]);
 }
 
-Filament.prototype.storeTailForce = function(gravity, densityField, tailForce) {
-    var densityRatio = densityField(this.position);
+Filament.prototype.storeTailForce = function(geosphere, tailForce) {
+    var densityRatio = geosphere.density(this.position);
     var n = Filament.numSegments();
     tailForce
-        .loadProduct(this.mass * (1 - densityRatio * this.buoyancy), gravity)
+        .loadProduct(this.mass * (1 - densityRatio * this.buoyancy), geosphere.gravity)
         .addProduct(this.scalarForce(n, -1, this.downAxis), this.downAxis[n]);
 }
 
-Filament.prototype.update = function(stepsize, gravity, headPosition, headVelocity, tailPosition, tailVelocity, densityField) {
+Filament.prototype.update = function(stepsize, geosphere, headPosition, headVelocity, tailPosition, tailVelocity) {
     var n = Filament.numSegments();
     this.position[0].load(headPosition);
     this.velocity[0].load(headVelocity);
@@ -345,24 +345,24 @@ Filament.prototype.update = function(stepsize, gravity, headPosition, headVeloci
     var halfstep = 0.5 * stepsize;
     var massRate = this.mass / (halfstep + Scalar.tiny());
     var lumped = this.spring * halfstep + this.damping;
-    this.updateCore(halfstep, gravity, massRate, lumped, 0, n, 1, this.upAxis, densityField);
-    this.updateCore(halfstep, gravity, massRate, lumped, n, 0, -1, this.downAxis, densityField);
+    this.updateCore(halfstep, geosphere, massRate, lumped, 0, n, 1, this.upAxis);
+    this.updateCore(halfstep, geosphere, massRate, lumped, n, 0, -1, this.downAxis);
 }
 
-Filament.prototype.updateCore = function(stepsize, gravity, massRate, lumped, start, end, sense, axis, densityField) {
+Filament.prototype.updateCore = function(stepsize, geosphere, massRate, lumped, start, end, sense, axis) {
     var leadForce = this.reusage.leadForce;
     var lagForce = this.reusage.lagForce;
     var accumulator = this.reusage.accumulator;
 
     for (var i = start + sense; i != end; i += sense) {
-        var densityRatio = densityField(this.position[i]);
+        var densityRatio = geosphere.density(this.position[i]);
         leadForce
             .loadDelta(this.position[i+sense], this.position[i])
             .multiplyBy(this.spring)
             .addProduct(this.damping, this.velocity[i+sense]);
         lagForce
             .loadProduct(massRate, this.velocity[i])
-            .addProduct(this.mass * (1 - densityRatio * this.buoyancy), gravity)
+            .addProduct(this.mass * (1 - densityRatio * this.buoyancy), geosphere.gravity)
             .subtractProduct(this.scalarForce(i-sense, sense, axis), axis[i-sense])
             .subtractProduct(this.spring * this.spacing, axis[i]);
         var fluid = this.drag * densityRatio * this.velocity[i].norm();
