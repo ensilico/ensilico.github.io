@@ -40,7 +40,7 @@
   "lure": {
     "mass": 0.003,
     "drag": 0.0002,
-    "buoyancy": 0.0005,
+    "buoyancy": 0.0012,
     "position": {
       "x": 1.3915759777697119,
       "y": -1.6170386982089526
@@ -62,7 +62,7 @@
     "spring": 40,
     "damping": 0.05,
     "drag": 0.0003,
-    "buoyancy": 0.0001,
+    "buoyancy": 0.0015,
     "bidi": 1,
     "position": [
       {
