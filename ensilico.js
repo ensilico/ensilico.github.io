@@ -320,16 +320,18 @@ Filament.prototype.scalarForce = function(i, sense, axis) {
     return accumulator.dot(axis[i]) - this.spring * this.spacing;
 }
 
-Filament.prototype.storeHeadForce = function(gravity, headForce) {
+Filament.prototype.storeHeadForce = function(gravity, densityField, headForce) {
+    var densityRatio = densityField(this.position);
     headForce
-        .loadProduct(this.mass, gravity)
+        .loadProduct(this.mass * (1 - densityRatio * this.buoyancy), gravity)
         .addProduct(this.scalarForce(0, 1, this.upAxis), this.upAxis[0]);
 }
 
-Filament.prototype.storeTailForce = function(gravity, tailForce) {
+Filament.prototype.storeTailForce = function(gravity, densityField, tailForce) {
+    var densityRatio = densityField(this.position);
     var n = Filament.numSegments();
     tailForce
-        .loadProduct(this.mass, gravity)
+        .loadProduct(this.mass * (1 - densityRatio * this.buoyancy), gravity)
         .addProduct(this.scalarForce(n, -1, this.downAxis), this.downAxis[n]);
 }
 
