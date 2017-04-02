@@ -67,7 +67,7 @@
                     this.lure.velocity,
                     Cast.densityField);
 
-                this.line.storeTailForce(Cast.gravity, tailForce);
+                this.line.storeTailForce(Cast.gravity, Cast.densityField, tailForce);
                 this.lure.update(
                     stepsize * this.lineCoupler * this.lureWarp,
                     Cast.gravity,
@@ -76,7 +76,7 @@
 
                 this.bot.update(stepsize, controls.pointer.velocity.y);
 
-                this.line.storeHeadForce(Cast.gravity, headForce);
+                this.line.storeHeadForce(Cast.gravity, Cast.densityField, headForce);
                 headForce.multiplyBy(this.lineCoupler);
                 targetPosition.loadPolar(this.rod.radius(), this.bot.angle);
                 targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
