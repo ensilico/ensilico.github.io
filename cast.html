@@ -35,13 +35,22 @@
                 y: -9.81
             });
 
-            Cast.waterlineY = function() {
-                return -2;
-            }
+            Cast.waterlineY = -2;
 
-            Cast.densityField = function(position) {
-                // Fluid density relative to air
-                return position.y > Cast.waterlineY() ? 1 : 784;
+            Cast.densityWaterToAir = 784;
+
+            Cast.geosphere = {
+                gravity: Cast.gravity,
+
+                surfaceHeight: function() {
+                    return Cast.waterlineY;
+                },
+
+                density: function(position) {
+                    return position.y > Cast.waterlineY
+                        ? 1
+                        : Cast.densityWaterToAir;
+                }
             }
 
             Cast.prototype.preferences = function() {
@@ -60,35 +69,34 @@
 
                 this.line.update(
                     stepsize * this.lineCoupler,
-                    Cast.gravity,
+                    Cast.geosphere,
                     this.rod.tipPosition,
                     this.rod.tipVelocity,
                     this.lure.position,
-                    this.lure.velocity,
-                    Cast.densityField);
+                    this.lure.velocity);
 
-                this.line.storeTailForce(Cast.gravity, Cast.densityField, tailForce);
+                this.line.storeTailForce(Cast.geosphere, tailForce);
                 this.lure.update(
                     stepsize * this.lineCoupler * this.lureWarp,
-                    Cast.gravity,
-                    tailForce,
-                    Cast.densityField);
+                    Cast.geosphere,
+                    tailForce);
 
                 this.bot.update(stepsize, controls.pointer.velocity.y);
 
-                this.line.storeHeadForce(Cast.gravity, Cast.densityField, headForce);
+                this.line.storeHeadForce(Cast.geosphere, headForce);
                 headForce.multiplyBy(this.lineCoupler);
                 targetPosition.loadPolar(this.rod.radius(), this.bot.angle);
                 targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
-                this.rod.update(stepsize, Cast.gravity, headForce, targetPosition, targetVelocity);
+                this.rod.update(stepsize, Cast.geosphere, headForce, targetPosition, targetVelocity);
             }
 
             Cast.prototype.visualize = function(context, elapsedTime) {
                 context.save();
                 context.translate(3, -3);
 
-                context.moveTo(-12, Cast.waterlineY());
-                context.lineTo(6, Cast.waterlineY());
+                var waterlineY = Cast.geosphere.surfaceHeight();
+                context.moveTo(-12, waterlineY);
+                context.lineTo(6, waterlineY);
 
                 // Rod flex curve
                 var r = -this.rod.pivotOffset;
