@@ -85,10 +85,10 @@
 
             Cast.prototype.visualize = function(context, elapsedTime) {
                 context.save();
-                context.translate(this.bot.position.x, this.bot.position.y);
+                context.translate(3, -3);
 
-                context.moveTo(-10, Cast.waterlineY());
-                context.lineTo(5, Cast.waterlineY());
+                context.moveTo(-12, Cast.waterlineY());
+                context.lineTo(6, Cast.waterlineY());
 
                 // Rod flex curve
                 var r = -this.rod.pivotOffset;
@@ -108,10 +108,6 @@
 
             function Bot() {
                 // Default values
-                this.position = {
-                    x: 0,
-                    y: 0
-                };
                 this.minAngle = 0;
                 this.maxAngle = Scalar.toRadians(90);
                 this.gain = 0.01;
