@@ -261,7 +261,6 @@ function Filament(headPosition, tailPosition) {
     this.damping = 0.1;
     this.drag = 0.0001;
     this.buoyancy = 0.0005; // buoyancy to weight ratio in air
-    this.bidi = 1;
 
     var n = Filament.numSegments();
     this.position = [];
@@ -347,11 +346,7 @@ Filament.prototype.update = function(stepsize, gravity, headPosition, headVeloci
     var massRate = this.mass / (halfstep + Scalar.tiny());
     var lumped = this.spring * halfstep + this.damping;
     this.updateCore(halfstep, gravity, massRate, lumped, 0, n, 1, this.upAxis, densityField);
-    if (this.bidi == 1) {
-        this.updateCore(halfstep, gravity, massRate, lumped, n, 0, -1, this.downAxis, densityField);
-    } else {
-        this.updateCore(halfstep, gravity, massRate, lumped, 0, n, 1, this.upAxis, densityField);
-    }
+    this.updateCore(halfstep, gravity, massRate, lumped, n, 0, -1, this.downAxis, densityField);
 }
 
 Filament.prototype.updateCore = function(stepsize, gravity, massRate, lumped, start, end, sense, axis, densityField) {
