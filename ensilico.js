@@ -171,6 +171,7 @@ function Particle() {
     // Default values
     this.mass = 0.005;
     this.drag = 0.001;
+    this.buoyancy = 0.0005; // buoyancy to weight ratio in air
     this.position = new Pair();
     this.velocity = new Pair();
 
@@ -182,12 +183,13 @@ function Particle() {
 
 Particle.prototype.update = function(stepsize, gravity, externalForce, densityField) {
     var massRate = this.mass / (stepsize + Scalar.tiny());
-    var drag = this.drag * densityField(this.position);
+    var densityRatio = densityField(this.position);
+    var drag = this.drag * densityRatio;
     var force = this.reusage.force;
 
     force
         .load(externalForce)
-        .addProduct(this.mass, gravity)
+        .addProduct(this.mass * (1 - densityRatio * this.buoyancy), gravity)
         .addProduct(massRate, this.velocity);
     var denominator = massRate + drag * this.velocity.norm();
     this.velocity.load(force).divideBy(denominator);
@@ -258,6 +260,7 @@ function Filament(headPosition, tailPosition) {
     this.spring = 10;
     this.damping = 0.1;
     this.drag = 0.0001;
+    this.buoyancy = 0.0005; // buoyancy to weight ratio in air
     this.bidi = 1;
 
     var n = Filament.numSegments();
@@ -355,16 +358,17 @@ Filament.prototype.updateCore = function(stepsize, gravity, massRate, lumped, st
     var accumulator = this.reusage.accumulator;
 
     for (var i = start + sense; i != end; i += sense) {
+        var densityRatio = densityField(this.position[i]);
         leadForce
             .loadDelta(this.position[i+sense], this.position[i])
             .multiplyBy(this.spring)
             .addProduct(this.damping, this.velocity[i+sense]);
         lagForce
             .loadProduct(massRate, this.velocity[i])
-            .addProduct(this.mass, gravity)
+            .addProduct(this.mass * (1 - densityRatio * this.buoyancy), gravity)
             .subtractProduct(this.scalarForce(i-sense, sense, axis), axis[i-sense])
             .subtractProduct(this.spring * this.spacing, axis[i]);
-        var fluid = this.drag * densityField(this.position[i]) * this.velocity[i].norm();
+        var fluid = this.drag * densityRatio * this.velocity[i].norm();
         accumulator
             .loadProduct(massRate + fluid, leadForce)
             .subtractProduct(lumped - fluid, lagForce)
