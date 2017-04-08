@@ -31,28 +31,24 @@
                 };
             }
 
-            Cast.gravity = new Pair().load({
-                x: 0,
-                y: -9.81
-            });
+            Cast.geosphere = (function() {
+                var localGravity = new Pair().load({
+                    x: 0,
+                    y: -9.81
+                });
+                var waterlineY = -2;
+                var densityWaterToAir = 784;
 
-            Cast.waterlineY = -2;
-
-            Cast.densityWaterToAir = 784;
-
-            Cast.geosphere = {
-                gravity: Cast.gravity,
-
-                surfaceHeight: function() {
-                    return Cast.waterlineY;
-                },
-
-                density: function(position) {
-                    return position.y > Cast.waterlineY
-                        ? 1
-                        : Cast.densityWaterToAir;
-                }
-            }
+                return {
+                    gravity: localGravity,
+                    surfaceHeight: function() {
+                        return waterlineY;
+                    },
+                    density: function(position) {
+                        return position.y > waterlineY ? 1 : densityWaterToAir;
+                    }
+                };
+            })();
 
             Cast.prototype.preferences = function() {
                 return {
