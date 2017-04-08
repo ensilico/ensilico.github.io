@@ -401,8 +401,8 @@ Platform.window = function() {
 
 // Copies values from src for corresponding properties in dst
 // Returns dst
-// Logs to console
-Platform.softCopy = function(dst, src) {
+// Logs to mainConsole
+Platform.softCopy = function(dst, src, mainConsole) {
     var log = [];
     for (var key in src) {
         var srcOwn = src.hasOwnProperty(key);
@@ -418,7 +418,7 @@ Platform.softCopy = function(dst, src) {
                 if (srcType != "object") {
                     dst[key] = srcValue;
                 } else if (srcValue && dstValue) {
-                    Platform.softCopy(dstValue, srcValue);
+                    Platform.softCopy(dstValue, srcValue, mainConsole);
                 } else {
                     if (!srcValue) {
                         log.push("src error at " + key);
@@ -441,7 +441,7 @@ Platform.softCopy = function(dst, src) {
     }
 
     if (log.length) {
-        Platform.window().console.log("softCopy: " + log.join());
+        mainConsole.log("softCopy: " + log.join());
     }
 
     return dst;
@@ -459,7 +459,7 @@ Platform.getJson = function(url, success) {
     xhr.send();
 }
 
-function Executive(simulation, context) {
+function Executive(simulation, context, mainConsole) {
     this.simulation = simulation;
     this.context = context;
     this.simulationLeadTime = 0;
@@ -474,7 +474,7 @@ function Executive(simulation, context) {
     };
 
     // Allow simulation to override
-    Platform.softCopy(preferences, simulation.preferences());
+    Platform.softCopy(preferences, simulation.preferences(), mainConsole);
 
     this.visualScale = preferences.visualScale;
     this.controls = {
@@ -500,7 +500,7 @@ Executive.breakFrame = function(id, onBreakFrame) {
 Executive.start = function(id, simulation) {
     var canvas = Platform.window().document.getElementById(id);
     var context = canvas.getContext("2d");
-    var instance = new Executive(simulation, context);
+    var instance = new Executive(simulation, context, Platform.window().console);
     instance.registerListeners(canvas);
     Executive.instances[id] = instance;
     if (!Executive.previousTimestamp) {
@@ -513,7 +513,7 @@ Executive.start = function(id, simulation) {
 // Starting an id already started is neither supported nor defined
 Executive.startFromJson = function(id, simulation, url) {
     Platform.getJson(url, function(json) {
-        Platform.softCopy(simulation, json);
+        Platform.softCopy(simulation, json, Platform.window().console);
         Executive.start(id, simulation);
     });
 }
