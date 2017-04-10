@@ -459,35 +459,35 @@ Platform.getJson = function(url, success) {
     xhr.send();
 }
 
-function FrameTimer() {}
+var FrameTimer = (function() {
+    var mainWindow = window;
+    var listeners = [];
+    var previousTimestamp = null;
 
-FrameTimer.mainWindow = window;
+    function nextFrame() {
+        mainWindow.requestAnimationFrame(onFrame);
+    };
 
-FrameTimer.listeners = [];
+    function onFrame(timestamp) {
+        var elapsedTime = (timestamp - previousTimestamp) / 1000;
+        previousTimestamp = timestamp;
+        var len = listeners.length;
+        for (var i = 0; i < len; i++) {
+            listeners[i](elapsedTime);
+        }
+        nextFrame();
+    };
 
-FrameTimer.previousTimestamp = null;
-
-FrameTimer.addListener = function(listener) {
-    FrameTimer.listeners.push(listener);
-    if (!FrameTimer.previousTimestamp) {
-        FrameTimer.previousTimestamp = FrameTimer.mainWindow.performance.now();
-        FrameTimer.nextFrame();
-    }
-}
-
-FrameTimer.nextFrame = function() {
-    FrameTimer.mainWindow.requestAnimationFrame(FrameTimer.onFrame);
-}
-
-FrameTimer.onFrame = function(timestamp) {
-    var elapsedTime = (timestamp - FrameTimer.previousTimestamp) / 1000;
-    FrameTimer.previousTimestamp = timestamp;
-    var len = FrameTimer.listeners.length;
-    for (var i = 0; i < len; i++) {
-        FrameTimer.listeners[i](elapsedTime);
-    }
-    FrameTimer.nextFrame();
-}
+    return {
+        addListener: function(listener) {
+            listeners.push(listener);
+            if (!previousTimestamp) {
+                previousTimestamp = mainWindow.performance.now();
+                nextFrame();
+            }
+        }
+    };
+})();
 
 function Executive(simulation, context, mainConsole) {
     this.simulation = simulation;
