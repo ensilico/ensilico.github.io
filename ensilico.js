@@ -460,8 +460,8 @@ Platform.getJson = function(url, success) {
 }
 
 var FrameTimer = (function() {
-    var mainWindow = window;
     var listeners = [];
+    var mainWindow = null;
     var previousTimestamp = null;
 
     function nextFrame() {
@@ -479,10 +479,11 @@ var FrameTimer = (function() {
     };
 
     return {
-        addListener: function(listener) {
+        addListener: function(listener, windowArg) {
             listeners.push(listener);
-            if (!previousTimestamp) {
-                previousTimestamp = mainWindow.performance.now();
+            if (!mainWindow) {
+                mainWindow = windowArg;
+                previousTimestamp = windowArg.performance.now();
                 nextFrame();
             }
         }
