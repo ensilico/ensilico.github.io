@@ -479,7 +479,7 @@ var FrameTimer = (function() {
     };
 
     return {
-        addListener: function(listener, windowArg) {
+        addListener: function(windowArg, listener) {
             listeners.push(listener);
             if (!mainWindow) {
                 mainWindow = windowArg;
@@ -518,8 +518,6 @@ function Executive(simulation, context, mainConsole) {
     this.maxStepsPerFrame = preferences.maxStepsPerFrame;
 }
 
-Executive.previousTimestamp = null;
-
 Executive.instances = {};
 
 Executive.breakFrame = function(id, onBreakFrame) {
@@ -534,10 +532,9 @@ Executive.start = function(id, simulation) {
     var instance = new Executive(simulation, context, Platform.window().console);
     instance.registerListeners(canvas);
     Executive.instances[id] = instance;
-    if (!Executive.previousTimestamp) {
-        Executive.previousTimestamp = Platform.window().performance.now();
-        Executive.nextFrame();
-    }
+    FrameTimer.addListener(Platform.window(), function(elapsedTime) {
+        instance.onFrame(elapsedTime);
+    });
 }
 
 // Simulation to canvas is assumed to be 1:1
@@ -547,21 +544,6 @@ Executive.startFromJson = function(id, simulation, url) {
         Platform.softCopy(simulation, json, Platform.window().console);
         Executive.start(id, simulation);
     });
-}
-
-Executive.nextFrame = function() {
-    Platform.window().requestAnimationFrame(Executive.onFrame);
-}
-
-Executive.onFrame = function(timestamp) {
-    var elapsedTime = (timestamp - Executive.previousTimestamp) / 1000;
-    Executive.previousTimestamp = timestamp;
-    for (var id in Executive.instances) {
-        if (Executive.instances.hasOwnProperty(id)) {
-            Executive.instances[id].onFrame(elapsedTime);
-        }
-    }
-    Executive.nextFrame();
 }
 
 Executive.prototype.onFrame = function(elapsedTime) {
