@@ -459,6 +459,36 @@ Platform.getJson = function(url, success) {
     xhr.send();
 }
 
+function FrameTimer() {}
+
+FrameTimer.mainWindow = window;
+
+FrameTimer.listeners = [];
+
+FrameTimer.previousTimestamp = null;
+
+FrameTimer.addListener = function(listener) {
+    FrameTimer.listeners.push(listener);
+    if (!FrameTimer.previousTimestamp) {
+        FrameTimer.previousTimestamp = FrameTimer.mainWindow.performance.now();
+        FrameTimer.nextFrame();
+    }
+}
+
+FrameTimer.nextFrame = function() {
+    FrameTimer.mainWindow.requestAnimationFrame(FrameTimer.onFrame);
+}
+
+FrameTimer.onFrame = function(timestamp) {
+    var elapsedTime = (timestamp - FrameTimer.previousTimestamp) / 1000;
+    FrameTimer.previousTimestamp = timestamp;
+    var len = FrameTimer.listeners.length;
+    for (var i = 0; i < len; i++) {
+        FrameTimer.listeners[i](elapsedTime);
+    }
+    FrameTimer.nextFrame();
+}
+
 function Executive(simulation, context, mainConsole) {
     this.simulation = simulation;
     this.context = context;
