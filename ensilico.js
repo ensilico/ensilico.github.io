@@ -462,7 +462,7 @@ Platform.getJson = function(url, success) {
 var FrameTimer = (function() {
     var listeners = [];
     var mainWindow = null;
-    var previousTimestamp = null;
+    var previousTimestamp = 0;
 
     function nextFrame() {
         mainWindow.requestAnimationFrame(onFrame);
