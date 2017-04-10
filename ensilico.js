@@ -490,9 +490,9 @@ var FrameTimer = (function() {
     };
 })();
 
-function Executive(simulation, context, mainConsole) {
+function Executive(simulation, canvas, mainConsole) {
     this.simulation = simulation;
-    this.context = context;
+    this.context = canvas.getContext("2d");
     this.simulationLeadTime = 0;
     this.onBreakFrame = null;
     this.clutch = new Clutch();
@@ -516,6 +516,8 @@ function Executive(simulation, context, mainConsole) {
         }
     };
     this.maxStepsPerFrame = preferences.maxStepsPerFrame;
+
+    this.registerListeners(canvas);
 }
 
 Executive.instances = {};
@@ -528,9 +530,7 @@ Executive.breakFrame = function(id, onBreakFrame) {
 // Starting an id already started is neither supported nor defined
 Executive.start = function(id, simulation) {
     var canvas = Platform.window().document.getElementById(id);
-    var context = canvas.getContext("2d");
-    var instance = new Executive(simulation, context, Platform.window().console);
-    instance.registerListeners(canvas);
+    var instance = new Executive(simulation, canvas, Platform.window().console);
     Executive.instances[id] = instance;
     FrameTimer.addListener(Platform.window(), function(elapsedTime) {
         instance.onFrame(elapsedTime);
