@@ -1,4 +1,4 @@
-var Scalar = {};
+var Scalar = {}
 
 // A bit larger than sqrt(MIN_NORMAL)
 Scalar.tiny = function() {
@@ -393,7 +393,7 @@ Filament.prototype.visualize = function(context, elapsedTime) {
     }
 }
 
-var Platform = {};
+var Platform = {}
 
 // Copies values from src for corresponding properties in dst
 // Returns dst
@@ -456,7 +456,7 @@ var FrameTimer = (function() {
 
     function nextFrame() {
         mainWindow.requestAnimationFrame(onFrame);
-    };
+    }
 
     function onFrame(timestamp) {
         var elapsedTime = (timestamp - previousTimestamp) / 1000;
@@ -466,7 +466,7 @@ var FrameTimer = (function() {
             listeners[i](elapsedTime);
         }
         nextFrame();
-    };
+    }
 
     return {
         addListener: function(windowArg, listener) {
@@ -510,7 +510,7 @@ var Executive = (function() {
         this.maxStepsPerFrame = preferences.maxStepsPerFrame;
 
         this.registerListeners(canvas);
-    };
+    }
 
     Agent.prototype.registerListeners = function(canvas) {
         var clutch = this.clutch;
@@ -536,7 +536,7 @@ var Executive = (function() {
         canvas.addEventListener("touchend", function() {
             clutch.onDisengage();
         }, false);
-    };
+    }
 
     Agent.prototype.onFrame = function(elapsedTime) {
         var stepsize = this.controls.stepsize;
@@ -565,7 +565,7 @@ var Executive = (function() {
 
         // Simple visualization
         this.visualizeSimulation(elapsedTime);
-    };
+    }
 
     Agent.prototype.updateSimulation = function(numSteps) {
         if (this.onBreakFrame) {
@@ -577,7 +577,7 @@ var Executive = (function() {
         for (var i = 0; i < numSteps; i++) {
             this.simulation.update(this.controls);
         }
-    };
+    }
 
     Agent.prototype.visualizeSimulation = function(elapsedTime) {
         var context = this.context;
@@ -591,7 +591,7 @@ var Executive = (function() {
         this.simulation.visualize(context, elapsedTime);
         context.restore();
         context.stroke();
-    };
+    }
 
     return {
         // Simulation to canvas is assumed to be 1:1
