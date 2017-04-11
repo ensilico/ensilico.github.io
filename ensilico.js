@@ -413,7 +413,7 @@ Platform.softCopy = function(dst, src, logHandler) {
                 if (srcType != "object") {
                     dst[key] = srcValue;
                 } else if (srcValue && dstValue) {
-                    Platform.softCopy(dstValue, srcValue, mainConsole);
+                    Platform.softCopy(dstValue, srcValue, logHandler);
                 } else if (logHandler) {
                     if (!srcValue) {
                         logHandler("src error at " + key);
@@ -480,7 +480,7 @@ var FrameTimer = (function() {
     };
 })();
 
-function Executive(simulation, canvas, mainConsole) {
+function Executive(simulation, canvas, logHandler) {
     this.simulation = simulation;
     this.context = canvas.getContext("2d");
     this.simulationLeadTime = 0;
@@ -495,7 +495,7 @@ function Executive(simulation, canvas, mainConsole) {
     };
 
     // Allow simulation to override
-    Platform.softCopy(preferences, simulation.preferences(), function(msg){mainConsole.log(msg)});
+    Platform.softCopy(preferences, simulation.preferences(), logHandler);
 
     this.visualScale = preferences.visualScale;
     this.controls = {
