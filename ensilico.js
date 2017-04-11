@@ -1,4 +1,4 @@
-var Scalar = {}
+var Scalar = {};
 
 // A bit larger than sqrt(MIN_NORMAL)
 Scalar.tiny = function() {
@@ -393,7 +393,7 @@ Filament.prototype.visualize = function(context, elapsedTime) {
     }
 }
 
-var Platform = {}
+var Platform = {};
 
 // Copies values from src for corresponding properties in dst
 // Returns dst
