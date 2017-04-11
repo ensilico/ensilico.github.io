@@ -1,4 +1,4 @@
-function Scalar() {}
+var Scalar = {};
 
 // A bit larger than sqrt(MIN_NORMAL)
 Scalar.tiny = function() {
@@ -393,7 +393,7 @@ Filament.prototype.visualize = function(context, elapsedTime) {
     }
 }
 
-function Platform() {}
+var Platform = {};
 
 Platform.window = function() {
     return window;
