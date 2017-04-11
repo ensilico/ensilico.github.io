@@ -481,7 +481,7 @@ var FrameTimer = (function() {
 })();
 
 var Executive2 = (function() {
-    var instances = {};
+    var agents = {};
     function Agent(simulation, canvas, logHandler) {
         this.simulation = simulation;
         this.context = canvas.getContext("2d");
@@ -597,10 +597,10 @@ var Executive2 = (function() {
         start: function(id, simulation, windowArg) {
             var mainWindow = windowArg || window;
             var canvas = mainWindow.document.getElementById(id);
-            var instance = new Agent(simulation, canvas, function(msg){mainWindow.console.log(msg)});
-            instances[id] = instance;
+            var agent = new Agent(simulation, canvas, function(msg){mainWindow.console.log(msg)});
+            agents[id] = agent;
             FrameTimer.addListener(mainWindow, function(elapsedTime) {
-                instance.onFrame(elapsedTime);
+                agent.onFrame(elapsedTime);
             });
         },
         startFromJson: function(id, simulation, url, windowArg) {
@@ -611,7 +611,7 @@ var Executive2 = (function() {
             });
         },
         breakFrame: function(id, onBreakFrame) {
-            instances[id].onBreakFrame = onBreakFrame;
+            agents[id].onBreakFrame = onBreakFrame;
         }
     };
 })();
