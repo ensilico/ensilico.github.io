@@ -480,6 +480,142 @@ var FrameTimer = (function() {
     };
 })();
 
+var Executive2 = (function() {
+    var instances = {};
+    function Agent(simulation, canvas, logHandler) {
+        this.simulation = simulation;
+        this.context = canvas.getContext("2d");
+        this.simulationLeadTime = 0;
+        this.onBreakFrame = null;
+        this.clutch = new Clutch();
+
+        // Default values
+        var preferences = {
+            visualScale: 100,
+            stepsize: 0.01,
+            maxStepsPerFrame: 100
+        };
+
+        // Allow simulation to override
+        Platform.softCopy(preferences, simulation.preferences(), logHandler);
+
+        this.visualScale = preferences.visualScale;
+        this.controls = {
+            stepsize: preferences.stepsize,
+            pointer: {
+                contact: 0,
+                velocity: new Pair()
+            }
+        };
+        this.maxStepsPerFrame = preferences.maxStepsPerFrame;
+
+        this.registerListeners(canvas);
+    };
+
+    Agent.prototype.registerListeners = function(canvas) {
+        var clutch = this.clutch;
+
+        canvas.addEventListener("mousedown", function(event) {
+            clutch.onEngage(event.clientX, event.clientY);
+        }, false);
+        canvas.addEventListener("mousemove", function(event) {
+            clutch.onMove(event.clientX, event.clientY);
+        }, false);
+        canvas.addEventListener("mouseup", function() {
+            clutch.onDisengage();
+        }, false);
+
+        canvas.addEventListener("touchstart", function(event) {
+            var touch = event.touches[0];
+            clutch.onEngage(touch.clientX, touch.clientY);
+        }, false);
+        canvas.addEventListener("touchmove", function(event) {
+            var touch = event.touches[0];
+            clutch.onMove(touch.clientX, touch.clientY);
+        }, false);
+        canvas.addEventListener("touchend", function() {
+            clutch.onDisengage();
+        }, false);
+    };
+
+    Agent.prototype.onFrame = function(elapsedTime) {
+        var stepsize = this.controls.stepsize;
+
+        // Adjust for simulation lead from previous frame
+        var simulationTime = elapsedTime - this.simulationLeadTime;
+
+        // Number of steps needed to meet or exceed the adjusted time
+        // Impose an upper limit because the browser might pause the animation indefinitely
+        var numSteps = Math.ceil(Scalar.rationalMin(simulationTime, stepsize, this.maxStepsPerFrame));
+
+        // Calculate adjustment for the next frame
+        var period = numSteps * stepsize;
+        this.simulationLeadTime = Math.max(0, period - simulationTime);
+
+        // Calculate pointer velocity
+        var contact = this.clutch.engaged ? 1 : 0;
+        this.controls.pointer.contact = contact;
+        this.controls.pointer.velocity
+            .loadDelta(this.clutch.currentPosition, this.clutch.basePosition)
+            .multiplyBy(contact / (period + Scalar.tiny()));
+        this.clutch.rebase();
+
+        // Update the simulation
+        this.updateSimulation(numSteps);
+
+        // Simple visualization
+        this.visualizeSimulation(elapsedTime);
+    };
+
+    Agent.prototype.updateSimulation = function(numSteps) {
+        if (this.onBreakFrame) {
+            this.onBreakFrame(this.simulation);
+            this.onBreakFrame = null;
+            debugger;
+        }
+
+        for (var i = 0; i < numSteps; i++) {
+            this.simulation.update(this.controls);
+        }
+    };
+
+    Agent.prototype.visualizeSimulation = function(elapsedTime) {
+        var context = this.context;
+        var w = context.canvas.width;
+        var h = context.canvas.height;
+        context.clearRect(0, 0, w, h);
+        context.save();
+        context.translate(w / 2, h / 2);
+        context.scale(this.visualScale, -this.visualScale);
+        context.beginPath();
+        this.simulation.visualize(context, elapsedTime);
+        context.restore();
+        context.stroke();
+    };
+
+    return {
+        start: function(id, simulation, windowArg) {
+            var mainWindow = windowArg || window;
+            var canvas = mainWindow.document.getElementById(id);
+            var instance = new Agent(simulation, canvas, function(msg){mainWindow.console.log(msg)});
+            instances[id] = instance;
+            FrameTimer.addListener(mainWindow, function(elapsedTime) {
+                instance.onFrame(elapsedTime);
+            });
+        },
+        startFromJson: function(id, simulation, url, windowArg) {
+            var mainWindow = windowArg || window;
+            Platform.getJson(url, function(json) {
+                Platform.softCopy(simulation, json, function(msg){mainWindow.console.log(msg)});
+                Executive2.start(id, simulation, mainWindow);
+            });
+        },
+        breakFrame: function(id, onBreakFrame) {
+            instances[id].onBreakFrame = onBreakFrame;
+        }
+    };
+})();
+
 function Executive(simulation, canvas, logHandler) {
     this.simulation = simulation;
     this.context = canvas.getContext("2d");
