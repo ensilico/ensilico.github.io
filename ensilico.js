@@ -397,9 +397,8 @@ var Platform = {};
 
 // Copies values from src for corresponding properties in dst
 // Returns dst
-// Logs to mainConsole
-Platform.softCopy = function(dst, src, mainConsole) {
-    var log = [];
+// Optional logHandler
+Platform.softCopy = function(dst, src, logHandler) {
     for (var key in src) {
         var srcOwn = src.hasOwnProperty(key);
         var dstOwn = dst.hasOwnProperty(key);
@@ -415,31 +414,26 @@ Platform.softCopy = function(dst, src, mainConsole) {
                     dst[key] = srcValue;
                 } else if (srcValue && dstValue) {
                     Platform.softCopy(dstValue, srcValue, mainConsole);
-                } else {
+                } else if (logHandler) {
                     if (!srcValue) {
-                        log.push("src error at " + key);
+                        logHandler("src error at " + key);
                     }
                     if (!dstValue) {
-                        log.push("dst error at " + key);
+                        logHandler("dst error at " + key);
                     }
                 }
-            } else {
-                log.push("type mismatch at " + key);
+            } else if (logHandler) {
+                logHandler("type mismatch at " + key);
             }
-        } else {
+        } else if (logHandler) {
             if (!srcOwn) {
-                log.push("skip src key " + key);
+                logHandler("skip src key " + key);
             }
             if (!dstOwn) {
-                log.push("no dst key " + key);
+                logHandler("no dst key " + key);
             }
         }
     }
-
-    if (log.length) {
-        mainConsole.log("softCopy: " + log.join());
-    }
-
     return dst;
 }
 
@@ -501,7 +495,7 @@ function Executive(simulation, canvas, mainConsole) {
     };
 
     // Allow simulation to override
-    Platform.softCopy(preferences, simulation.preferences(), mainConsole);
+    Platform.softCopy(preferences, simulation.preferences(), function(msg){mainConsole.log(msg)});
 
     this.visualScale = preferences.visualScale;
     this.controls = {
@@ -528,7 +522,7 @@ Executive.breakFrame = function(id, onBreakFrame) {
 Executive.start = function(id, simulation, windowArg) {
     var mainWindow = windowArg || window;
     var canvas = mainWindow.document.getElementById(id);
-    var instance = new Executive(simulation, canvas, mainWindow.console);
+    var instance = new Executive(simulation, canvas, function(msg){mainWindow.console.log(msg)});
     Executive.instances[id] = instance;
     FrameTimer.addListener(mainWindow, function(elapsedTime) {
         instance.onFrame(elapsedTime);
@@ -541,8 +535,8 @@ Executive.start = function(id, simulation, windowArg) {
 Executive.startFromJson = function(id, simulation, url, windowArg) {
     var mainWindow = windowArg || window;
     Platform.getJson(url, function(json) {
-        Platform.softCopy(simulation, json, mainWindow.console);
-        Executive.start(id, simulation);
+        Platform.softCopy(simulation, json, function(msg){mainWindow.console.log(msg)});
+        Executive.start(id, simulation, mainWindow);
     });
 }
 
