@@ -395,10 +395,6 @@ Filament.prototype.visualize = function(context, elapsedTime) {
 
 var Platform = {};
 
-Platform.window = function() {
-    return window;
-}
-
 // Copies values from src for corresponding properties in dst
 // Returns dst
 // Logs to mainConsole
@@ -528,20 +524,24 @@ Executive.breakFrame = function(id, onBreakFrame) {
 
 // Simulation to canvas is assumed to be 1:1
 // Starting an id already started is neither supported nor defined
-Executive.start = function(id, simulation) {
-    var canvas = Platform.window().document.getElementById(id);
-    var instance = new Executive(simulation, canvas, Platform.window().console);
+// Optional windowArg is for dependency injection
+Executive.start = function(id, simulation, windowArg) {
+    var mainWindow = windowArg || window;
+    var canvas = mainWindow.document.getElementById(id);
+    var instance = new Executive(simulation, canvas, mainWindow.console);
     Executive.instances[id] = instance;
-    FrameTimer.addListener(Platform.window(), function(elapsedTime) {
+    FrameTimer.addListener(mainWindow, function(elapsedTime) {
         instance.onFrame(elapsedTime);
     });
 }
 
 // Simulation to canvas is assumed to be 1:1
 // Starting an id already started is neither supported nor defined
-Executive.startFromJson = function(id, simulation, url) {
+// Optional windowArg is for dependency injection
+Executive.startFromJson = function(id, simulation, url, windowArg) {
+    var mainWindow = windowArg || window;
     Platform.getJson(url, function(json) {
-        Platform.softCopy(simulation, json, Platform.window().console);
+        Platform.softCopy(simulation, json, mainWindow.console);
         Executive.start(id, simulation);
     });
 }
