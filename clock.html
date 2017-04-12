@@ -18,11 +18,11 @@
                 return {
                     visualScale: 200
                 };
-            }
+            };
 
             Clock.prototype.update = function(controls) {
                 this.time += controls.stepsize;
-            }
+            };
 
             Clock.prototype.visualize = function(context, elapsedTime) {
                 var halfDays = this.time / (60 * 60 * 12);
@@ -44,12 +44,12 @@
                         this.radii.outer,
                         angle);
                 }
-            }
+            };
 
             Clock.drawRadial = function(context, r1, r2, angle) {
                 context.moveTo(r1 * Math.sin(angle), r1 * Math.cos(angle));
                 context.lineTo(r2 * Math.sin(angle), r2 * Math.cos(angle));
-            }
+            };
 
             var theSim; // for debug
         </script>
