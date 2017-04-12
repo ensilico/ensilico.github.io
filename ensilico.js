@@ -482,6 +482,7 @@ var FrameTimer = (function() {
 
 var Executive = (function() {
     var agents = {};
+
     function Agent(simulation, canvas, logHandler) {
         this.simulation = simulation;
         this.context = canvas.getContext("2d");
@@ -599,8 +600,11 @@ var Executive = (function() {
         // Optional windowArg is for dependency injection
         start: function(id, simulation, windowArg) {
             var mainWindow = windowArg || window;
+            var logHandler = function(msg) {
+                mainWindow.console.log(msg);
+            };
             var canvas = mainWindow.document.getElementById(id);
-            var agent = new Agent(simulation, canvas, function(msg){mainWindow.console.log(msg);});
+            var agent = new Agent(simulation, canvas, logHandler);
             agents[id] = agent;
             FrameTimer.addListener(mainWindow, function(elapsedTime) {
                 agent.onFrame(elapsedTime);
@@ -611,8 +615,11 @@ var Executive = (function() {
         // Optional windowArg is for dependency injection
         startFromJson: function(id, simulation, url, windowArg) {
             var mainWindow = windowArg || window;
+            var logHandler = function(msg) {
+                mainWindow.console.log(msg);
+            };
             Platform.getJson(url, function(json) {
-                Platform.softCopy(simulation, json, function(msg){mainWindow.console.log(msg);});
+                Platform.softCopy(simulation, json, logHandler);
                 Executive.start(id, simulation, mainWindow);
             });
         },
