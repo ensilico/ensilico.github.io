@@ -600,7 +600,7 @@ var Executive = (function() {
         start: function(id, simulation, windowArg) {
             var mainWindow = windowArg || window;
             var canvas = mainWindow.document.getElementById(id);
-            var agent = new Agent(simulation, canvas, function(msg){mainWindow.console.log(msg)});
+            var agent = new Agent(simulation, canvas, function(msg){mainWindow.console.log(msg);});
             agents[id] = agent;
             FrameTimer.addListener(mainWindow, function(elapsedTime) {
                 agent.onFrame(elapsedTime);
@@ -612,7 +612,7 @@ var Executive = (function() {
         startFromJson: function(id, simulation, url, windowArg) {
             var mainWindow = windowArg || window;
             Platform.getJson(url, function(json) {
-                Platform.softCopy(simulation, json, function(msg){mainWindow.console.log(msg)});
+                Platform.softCopy(simulation, json, function(msg){mainWindow.console.log(msg);});
                 Executive.start(id, simulation, mainWindow);
             });
         },
