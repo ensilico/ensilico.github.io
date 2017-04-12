@@ -32,15 +32,14 @@
             }
 
             Cast.geosphere = (function() {
-                var localGravity = new Pair().load({
-                    x: 0,
-                    y: -9.81
-                });
                 var waterlineY = -2;
                 var densityWaterToAir = 784;
 
                 return {
-                    gravity: localGravity,
+                    gravity: new Pair().load({
+                        x: 0,
+                        y: -9.81
+                    }),
                     surfaceHeight: function() {
                         return waterlineY;
                     },
@@ -55,7 +54,7 @@
                     visualScale: 32,
                     stepsize: 0.00025
                 };
-            }
+            };
 
             Cast.prototype.update = function(controls) {
                 var stepsize = controls.stepsize;
@@ -85,7 +84,7 @@
                 targetPosition.loadPolar(this.rod.radius(), this.bot.angle);
                 targetVelocity.loadCrossProduct(this.bot.rate, targetPosition);
                 this.rod.update(stepsize, Cast.geosphere, headForce, targetPosition, targetVelocity);
-            }
+            };
 
             Cast.prototype.visualize = function(context, elapsedTime) {
                 context.save();
@@ -109,7 +108,7 @@
                 }
 
                 context.restore();
-            }
+            };
 
             function Bot() {
                 // Default values
@@ -127,7 +126,7 @@
                 this.angle = Math.min(
                     Math.max(this.minAngle, Scalar.integrate(this.angle, this.rate, stepsize)),
                     this.maxAngle);
-            }
+            };
 
             var theSim; // for debug
        </script>
