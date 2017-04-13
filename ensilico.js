@@ -502,7 +502,7 @@ var Executive = (function() {
         };
 
         // Allow simulation to override
-        Platform.softCopy(preferences, simulation.preferences(), log);
+        Platform.softCopy(preferences, simulation.preferences, log);
 
         this.visualScale = preferences.visualScale;
         this.controls = {
