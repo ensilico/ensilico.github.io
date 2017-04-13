@@ -397,8 +397,8 @@ var Platform = {};
 
 // Copies values from src for corresponding properties in dst
 // Returns dst
-// Optional logHandler
-Platform.softCopy = function(dst, src, logHandler) {
+// Optional log handler
+Platform.softCopy = function(dst, src, log) {
     for (var key in src) {
         var srcOwn = src.hasOwnProperty(key);
         var dstOwn = dst.hasOwnProperty(key);
@@ -413,24 +413,24 @@ Platform.softCopy = function(dst, src, logHandler) {
                 if (srcType != "object") {
                     dst[key] = srcValue;
                 } else if (srcValue && dstValue) {
-                    Platform.softCopy(dstValue, srcValue, logHandler);
-                } else if (logHandler) {
+                    Platform.softCopy(dstValue, srcValue, log);
+                } else if (log) {
                     if (!srcValue) {
-                        logHandler("src error at " + key);
+                        log("src error at " + key);
                     }
                     if (!dstValue) {
-                        logHandler("dst error at " + key);
+                        log("dst error at " + key);
                     }
                 }
-            } else if (logHandler) {
-                logHandler("type mismatch at " + key);
+            } else if (log) {
+                log("type mismatch at " + key);
             }
-        } else if (logHandler) {
+        } else if (log) {
             if (!srcOwn) {
-                logHandler("skip src key " + key);
+                log("skip src key " + key);
             }
             if (!dstOwn) {
-                logHandler("no dst key " + key);
+                log("no dst key " + key);
             }
         }
     }
@@ -487,7 +487,7 @@ var FrameTimer = (function() {
 var Executive = (function() {
     var agents = {};
 
-    function Agent(simulation, canvas, logHandler) {
+    function Agent(simulation, canvas, log) {
         this.simulation = simulation;
         this.context = canvas.getContext("2d");
         this.simulationLeadTime = 0;
@@ -502,7 +502,7 @@ var Executive = (function() {
         };
 
         // Allow simulation to override
-        Platform.softCopy(preferences, simulation.preferences(), logHandler);
+        Platform.softCopy(preferences, simulation.preferences(), log);
 
         this.visualScale = preferences.visualScale;
         this.controls = {
@@ -603,14 +603,14 @@ var Executive = (function() {
         // Optional windowArg is for dependency injection
         start: function(id, simulation, url, windowArg) {
             var mainWindow = windowArg || window;
-            var logHandler = function(msg) {
+            var log = function(msg) {
                 mainWindow.console.log(msg);
             };
             var canvas = mainWindow.document.getElementById(id);
-            var agent = new Agent(simulation, canvas, logHandler);
+            var agent = new Agent(simulation, canvas, log);
             agents[id] = agent;
             Platform.getJson(url, function(json) {
-                Platform.softCopy(simulation, json, logHandler);
+                Platform.softCopy(simulation, json, log);
                 FrameTimer.addListener(mainWindow, function(elapsedTime) {
                     agent.onFrame(elapsedTime);
                 });
