@@ -49,11 +49,9 @@
                 };
             })();
 
-            Cast.prototype.preferences = function() {
-                return {
-                    visualScale: 32,
-                    stepsize: 0.00025
-                };
+            Cast.prototype.preferences = {
+                visualScale: 32,
+                stepsize: 0.00025
             };
 
             Cast.prototype.update = function(controls) {
