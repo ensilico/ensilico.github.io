@@ -438,15 +438,19 @@ Platform.softCopy = function(dst, src, logHandler) {
 };
 
 Platform.getJson = function(url, success) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            var json = JSON.parse(xhr.responseText);
-            success(json);
-        }
-    };
-    xhr.send();
+    if (!url) {
+        success({});
+    } else {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var json = JSON.parse(xhr.responseText);
+                success(json);
+            }
+        };
+        xhr.send();
+    }
 };
 
 var FrameTimer = (function() {
@@ -598,7 +602,7 @@ var Executive = (function() {
         // Simulation to canvas is assumed to be 1:1
         // Starting an id already started is neither supported nor defined
         // Optional windowArg is for dependency injection
-        start: function(id, simulation, windowArg) {
+        start: function(id, simulation, url, windowArg) {
             var mainWindow = windowArg || window;
             var logHandler = function(msg) {
                 mainWindow.console.log(msg);
@@ -606,21 +610,11 @@ var Executive = (function() {
             var canvas = mainWindow.document.getElementById(id);
             var agent = new Agent(simulation, canvas, logHandler);
             agents[id] = agent;
-            FrameTimer.addListener(mainWindow, function(elapsedTime) {
-                agent.onFrame(elapsedTime);
-            });
-        },
-        // Simulation to canvas is assumed to be 1:1
-        // Starting an id already started is neither supported nor defined
-        // Optional windowArg is for dependency injection
-        startFromJson: function(id, simulation, url, windowArg) {
-            var mainWindow = windowArg || window;
-            var logHandler = function(msg) {
-                mainWindow.console.log(msg);
-            };
             Platform.getJson(url, function(json) {
                 Platform.softCopy(simulation, json, logHandler);
-                Executive.start(id, simulation, mainWindow);
+                FrameTimer.addListener(mainWindow, function(elapsedTime) {
+                    agent.onFrame(elapsedTime);
+                });
             });
         },
         breakFrame: function(id, onBreakFrame) {
