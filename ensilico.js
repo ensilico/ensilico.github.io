@@ -576,7 +576,6 @@ var Executive = (function() {
         if (this.onBreakFrame) {
             this.onBreakFrame(this.simulation);
             this.onBreakFrame = null;
-            debugger;
         }
 
         for (var i = 0; i < numSteps; i++) {
@@ -617,8 +616,14 @@ var Executive = (function() {
                 });
             });
         },
-        breakFrame: function(id, onBreakFrame) {
-            agents[id].onBreakFrame = onBreakFrame;
+        breakFrame: function(id, onBreakFrame, debugArg) {
+            var debug = debugArg || function() {
+                debugger;
+            };
+            agents[id].onBreakFrame = function(sim) {
+                onBreakFrame(sim);
+                debug();
+            };
         }
     };
 })();
