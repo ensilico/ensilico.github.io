@@ -22,12 +22,15 @@
                 // A value of 0 will detach and freeze the line
                 this.lineCoupler = 1;
 
-                // Avoid object allocation in inner loop
-                this.reusage = {
+                // Use closure to avoid object allocation in inner loop
+                var reusage = {
                     headForce: new Pair(),
                     tailForce: new Pair(),
                     targetPosition: new Pair(),
                     targetVelocity: new Pair()
+                };
+                this.reusage = function() {
+                    return reusage;
                 };
             }
 
@@ -56,10 +59,11 @@
 
             Cast.prototype.update = function(controls) {
                 var stepsize = controls.stepsize;
-                var headForce = this.reusage.headForce;
-                var tailForce = this.reusage.tailForce;
-                var targetPosition = this.reusage.targetPosition;
-                var targetVelocity = this.reusage.targetVelocity;
+                var reusage = this.reusage();
+                var headForce = reusage.headForce;
+                var tailForce = reusage.tailForce;
+                var targetPosition = reusage.targetPosition;
+                var targetVelocity = reusage.targetVelocity;
 
                 this.line.update(
                     stepsize * this.lineCoupler,
