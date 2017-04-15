@@ -44,7 +44,7 @@
         for (var key in a) {
           if (a.hasOwnProperty(key)) {
             aKeys.push(key);
-            bMap[key] = i;
+            aMap[key] = i;
             i++;
           }
         }
@@ -53,7 +53,7 @@
         for (var key in b) {
           if (b.hasOwnProperty(key)) {
             bKeys.push(key);
-            aMap[key] = i;
+            bMap[key] = i;
             i++;
           }
         }
@@ -61,12 +61,17 @@
         i = 0;
         var j = 0;
         while (i < aKeys.length && j < bKeys.length) {
+          for (; !bMap.hasOwnProperty(aKeys[i]); i++) {
+            remove(aKeys[i]);
+          }
+          for (; !aMap.hasOwnProperty(bKeys[j]); j++) {
+            add(bKeys[j]);
+          }
           if (aKeys[i] == bKeys[j]) {
             both(aKeys[i]);
             i++;
             j++;
           } else {
-            var iNext = aMap[aKeys[i]] || -1; // BUG: 0 is falsey!!!!!....
           }
         }
       }
