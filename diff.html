@@ -2,7 +2,61 @@
   <head>
     <script>
       function init() {
+        var both = function(key) {
+          console.log(" " + key);
+        };
+        var add = function(key) {
+          console.log("+" + key);
+        };
+        var remove = function(key) {
+          console.log("-" + key);
+        };
+
+        var abcd = {
+          a: 3,
+          b: 1,
+          c: 4,
+          d: 1
+        };
+
+        var bdc = {
+          b: 4,
+          d: 2,
+          c: 0
+        };
+
+        var efg = {
+          e: 9,
+          f: 8,
+          g: 1
+        };
+
         console.log("bye.");
+      }
+
+      function diff(a, b, both, add, remove) {
+        var aKeys = [];
+        var aMap = {};
+        var bKeys = [];
+        var bMap = {};
+
+        var i = 0;
+        for (var key in a) {
+          if (a.hasOwnProperty(key)) {
+            aKeys.push(key);
+            bMap[key] = i;
+            i++;
+          }
+        }
+
+        i = 0;
+        for (var key in b) {
+          if (b.hasOwnProperty(key)) {
+            bKeys.push(key);
+            aMap[key] = i;
+            i++;
+          }
+        }
       }
     </script>
   </head>
