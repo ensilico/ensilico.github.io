@@ -57,6 +57,18 @@
             i++;
           }
         }
+
+        i = 0;
+        var j = 0;
+        while (i < aKeys.length && j < bKeys.length) {
+          if (aKeys[i] == bKeys[j]) {
+            both(aKeys[i]);
+            i++;
+            j++;
+          } else {
+            var iNext = aMap[aKeys[i]] || -1; // BUG: 0 is falsey!!!!!....
+          }
+        }
       }
     </script>
   </head>
