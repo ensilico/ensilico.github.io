@@ -175,9 +175,12 @@ function Particle() {
     this.position = new Pair();
     this.velocity = new Pair();
 
-    // Avoid object allocation in inner loop
-    this.reusage = {
+    // Use closure to avoid object allocation in inner loop
+    var reusage = {
         force: new Pair()
+    };
+    this.reusage = function() {
+        return reusage;
     };
 }
 
@@ -185,7 +188,7 @@ Particle.prototype.update = function(stepsize, geosphere, externalForce) {
     var massRate = this.mass / (stepsize + Scalar.tiny());
     var densityRatio = geosphere.density(this.position);
     var drag = this.drag * densityRatio;
-    var force = this.reusage.force;
+    var force = this.reusage().force;
 
     force
         .load(externalForce)
@@ -209,10 +212,13 @@ function Flexor() {
     this.alignTo(0);
     this.tipVelocity = new Pair();
 
-    // Avoid object allocation in inner loop
-    this.reusage = {
+    // Use closure to avoid object allocation in inner loop
+    var reusage = {
         force: new Pair(),
         velocity: new Pair()
+    };
+    this.reusage = function() {
+        return reusage;
     };
 }
 
@@ -227,8 +233,9 @@ Flexor.prototype.alignTo = function(angle) {
 
 Flexor.prototype.update = function(stepsize, geosphere, externalForce, targetPosition, targetVelocity) {
     var massRate = this.mass / (stepsize + Scalar.tiny());
-    var force = this.reusage.force;
-    var velocity = this.reusage.velocity;
+    var reusage = this.reusage();
+    var force = reusage.force;
+    var velocity = reusage.velocity;
 
     force
         .load(externalForce)
@@ -280,13 +287,16 @@ function Filament(headPosition, tailPosition) {
     }
     this.updateAxes();
 
-    // Avoid object allocation in inner loop
-    this.reusage = {
+    // Use closure to avoid object allocation in inner loop
+    var reusage = {
         deltaPosition: new Pair(),
         deltaVelocity: new Pair(),
         accumulator: new Pair(),
         leadForce: new Pair(),
         lagForce: new Pair()
+    };
+    this.reusage = function() {
+        return reusage;
     };
 }
 
@@ -307,9 +317,10 @@ Filament.prototype.updateAxes = function() {
 };
 
 Filament.prototype.scalarForce = function(i, sense, axis) {
-    var deltaPosition = this.reusage.deltaPosition;
-    var deltaVelocity = this.reusage.deltaVelocity;
-    var accumulator = this.reusage.accumulator;
+    var reusage = this.reusage();
+    var deltaPosition = reusage.deltaPosition;
+    var deltaVelocity = reusage.deltaVelocity;
+    var accumulator = reusage.accumulator;
 
     deltaPosition.loadDelta(this.position[i+sense], this.position[i]);
     deltaVelocity.loadDelta(this.velocity[i+sense], this.velocity[i]);
@@ -350,9 +361,10 @@ Filament.prototype.update = function(stepsize, geosphere, headPosition, headVelo
 };
 
 Filament.prototype.updateCore = function(stepsize, geosphere, massRate, lumped, start, end, sense, axis) {
-    var leadForce = this.reusage.leadForce;
-    var lagForce = this.reusage.lagForce;
-    var accumulator = this.reusage.accumulator;
+    var reusage = this.reusage();
+    var leadForce = reusage.leadForce;
+    var lagForce = reusage.lagForce;
+    var accumulator = reusage.accumulator;
 
     for (var i = start + sense; i != end; i += sense) {
         var densityRatio = geosphere.density(this.position[i]);
@@ -379,7 +391,7 @@ Filament.prototype.updateCore = function(stepsize, geosphere, massRate, lumped, 
 };
 
 Filament.prototype.visualize = function(context, elapsedTime) {
-    var accumulator = this.reusage.accumulator;
+    var accumulator = this.reusage().accumulator;
 
     context.moveTo(this.position[0].x, this.position[0].y);
     var len = Filament.numSegments() + 1;
