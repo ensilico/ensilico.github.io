@@ -131,6 +131,7 @@
             };
 
             var theSim; // for debug
+            var tmpDst; // for debug
        </script>
     </head>
     <body onload="Executive.start('cast', new Cast(), 'cast.json')">
@@ -138,5 +139,6 @@
             Opps.
         </canvas>
         <button onclick="Executive.breakFrame('cast', function(sim){theSim=sim;})">Break</button>
+        <button onclick="Platform.load(new Cast(), 'cast.json', function(msg){console.log(msg);}, function(dst){tmpDst=dst;debugger;})">Check</button>
     </body>
 </html>
