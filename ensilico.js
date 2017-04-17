@@ -465,6 +465,14 @@ Platform.getJson = function(url, success) {
     }
 };
 
+Platform.load = function(dst, url, log, onLoad, getJsonArg) {
+    var getJson = getJsonArg || Platform.getJson;
+    getJson(url, function(json) {
+        Platform.softCopy(dst, json, log);
+        onLoad(dst);
+    });
+}
+
 var FrameTimer = (function() {
     var listeners = [];
     var mainWindow = null;
@@ -621,8 +629,7 @@ var Executive = (function() {
             var canvas = mainWindow.document.getElementById(id);
             var agent = new Agent(simulation, canvas, log);
             agents[id] = agent;
-            Platform.getJson(url, function(json) {
-                Platform.softCopy(simulation, json, log);
+            Platform.load(simulation, url, log, function() {
                 FrameTimer.addListener(mainWindow, function(elapsedTime) {
                     agent.onFrame(elapsedTime);
                 });
