@@ -11,11 +11,11 @@
 
         return Selftest
           .describe("The first index of a value")
-          .returns(-1).forArgs([], 7)
-          .returns(-1).forArgs([3], 7)
-          .returns(0).forArgs([3], 3)
-          .returns(2).forArgs([2, 4, 7], 7)
-          .as(function(a, n) {
+          .with([], 7).returns(-1)
+          .with([3], 7).returns(-1)
+          .with([3], 3).returns(0)
+          .with([2, 4, 7], 7).returns(2)
+          .assert(function(a, n) {
             var result = -1;
             for (var i = 0; i < a.length; i++) {
               if (areEqual(a[i], n)) {
@@ -26,6 +26,23 @@
             return result;
           });
       })();
+
+      MyClass.lerp = (function() {
+        function small() {
+          return Math.pow(2, -60); // or whatever
+        }
+
+        var myTest = Selftest
+          .describe("Linear interpolation")
+          .with(small(), 1, 0).returns(small());
+
+        myTest.refute(function(f1, f2, t) {
+          return f1 + (f2 - f1) * t;
+        });
+
+        return myTest.assert(function(f1, f2, t) {
+          return (1 - t) * f1 + t * f2;
+        });
     </script>
   </head>
   <body>
