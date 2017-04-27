@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>
+      Tests
+    </title>
+    <script>
+      MyClass.indexOf = (function() {
+        return Selftest
+          .describe("The index of a value")
+          .returns(-1).forArgs([], 7)
+          .returns(-1).forArgs([3], 7)
+          .returns(0).forArgs([3], 3)
+          .returns(2).forArgs([2, 4, 7], 7)
+          .as(function(a, n) {
+          });
+      })();
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
