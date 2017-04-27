@@ -5,13 +5,25 @@
     </title>
     <script>
       MyClass.indexOf = (function() {
+        function areEqual(a, b) {
+          return a === b;
+        }
+
         return Selftest
-          .describe("The index of a value")
+          .describe("The first index of a value")
           .returns(-1).forArgs([], 7)
           .returns(-1).forArgs([3], 7)
           .returns(0).forArgs([3], 3)
           .returns(2).forArgs([2, 4, 7], 7)
           .as(function(a, n) {
+            var result = -1;
+            for (var i = 0; i < a.length; i++) {
+              if (areEqual(a[i], n)) {
+                result = i;
+                break;
+              }
+            }
+            return result;
           });
       })();
     </script>
