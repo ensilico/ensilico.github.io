@@ -43,6 +43,18 @@
         return myTest.assert(function(f1, f2, t) {
           return (1 - t) * f1 + t * f2;
         });
+      })();
+
+      function Clock() {
+        this.time = 0;
+      }
+
+      Clock.prototype.add = Selftest
+        .describe("Add time")
+        .start({time: 0}).with(3).end({time: 3})
+        .assert(function(delta) {
+        this.time += delta;
+      });
     </script>
   </head>
   <body>
