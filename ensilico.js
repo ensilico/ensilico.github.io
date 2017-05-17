@@ -35,6 +35,10 @@ Scalar.integrate = function(state, rate, stepsize) {
     return stepsize * rate + state;
 };
 
+Scalar.crossPairs = function(p1, p2) {
+    return p1.x * p2.y - p1.y * p2.x;
+}
+
 function Pair() {
     this.x = 0;
     this.y = 0;
