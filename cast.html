@@ -1,6 +1,14 @@
 <html>
     <head>
         <meta name="viewport" content="width=device-width, user-scalable=no">
+        <style>
+            .unselectable {
+                -moz-user-select: none;
+                -webkit-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+        </style>
         <script src="ensilico.js"></script>
         <script>
             function Cast() {
@@ -134,7 +142,7 @@
             var tmpDst; // for debug
        </script>
     </head>
-    <body onload="Executive.start('cast', new Cast(), 'cast.json')">
+    <body onload="Executive.start('cast', new Cast(), 'cast.json')" class="unselectable">
         <canvas id="cast" width="800" height="600">
             Opps.
         </canvas>
