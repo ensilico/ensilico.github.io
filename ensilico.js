@@ -553,6 +553,9 @@ var Executive = (function() {
         canvas.addEventListener("mouseup", function() {
             clutch.onDisengage();
         }, false);
+        canvas.addEventListener("mouseout", function() {
+            clutch.onDisengage();
+        }, false);
 
         canvas.addEventListener("touchstart", function(event) {
             var touch = event.touches[0];
