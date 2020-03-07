@@ -1,0 +1,29 @@
+{
+  "name": "ensilico",
+  "version": "0.0.1",
+  "description": "Synthetic data generation, simulated vehicles",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ensilico/ensilico.github.io.git"
+  },
+  "keywords": [
+    "autonomous",
+    "vehicle",
+    "simulation",
+    "machine",
+    "learning",
+    "synthetic",
+    "data",
+    "generation"
+  ],
+  "author": "Ken Whatmough",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ensilico/ensilico.github.io/issues"
+  },
+  "homepage": "https://github.com/ensilico/ensilico.github.io#readme"
+}
