@@ -1,6 +1,6 @@
 {
   "name": "ensilico",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Synthetic data generation, simulated vehicles",
   "main": "index.js",
   "type": "module",
